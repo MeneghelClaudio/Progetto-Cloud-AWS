@@ -53,7 +53,7 @@ services:
 
   storia-del-corso:
     build:
-      context: ./storia del corso
+      context: ./storia-del-corso
       dockerfile: Dockerfile
     container_name: storia-del-corso
     expose:

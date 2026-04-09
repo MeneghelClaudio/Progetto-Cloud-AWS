@@ -48,10 +48,10 @@ function isAuthenticated(req, res, next) {
     }
 }
 
-app.use('/storia', isAuthenticated, createProxyMiddleware({
+app.use('/storia-del-corso', isAuthenticated, createProxyMiddleware({
     target: 'http://storia-del-corso:80',
     changeOrigin: true,
-    pathRewrite: { '^/storia': '' }
+    pathRewrite: { '^/storia-del-corso': '' }
 }));
 
 app.post('/api/login', async (req, res) => {
