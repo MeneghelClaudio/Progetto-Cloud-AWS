@@ -1,0 +1,202 @@
+[
+  {
+    "id": "2025-10",
+    "mese": "Ottobre 2025",
+    "dataOrdine": "2025-10-01",
+    "materie": [
+      "Gestione del processo formativo",
+      "Soft Skills",
+      "Fondamenti di programmazione"
+    ],
+    "strumenti": [
+      "PowerPoint",
+      "PyCharm"
+    ],
+    "linguaggi": [],
+    "ambienti": [],
+    "descrizione": "Avvio del corso con lezioni teoriche e primi approcci alla programmazione."
+  },
+  {
+    "id": "2025-11",
+    "mese": "Novembre 2025",
+    "dataOrdine": "2025-11-01",
+    "materie": [
+      "Fondamenti di programmazione",
+      "Networking",
+      "Sicurezza e prevenzione",
+      "Inglese tecnico"
+    ],
+    "strumenti": [
+      "PyCharm",
+      "Cisco Packet Tracer",
+      "PowerPoint"
+    ],
+    "linguaggi": [],
+    "ambienti": [],
+    "descrizione": "Introduzione al networking e consolidamento della programmazione."
+  },
+  {
+    "id": "2025-12",
+    "mese": "Dicembre 2025",
+    "dataOrdine": "2025-12-01",
+    "materie": [
+      "Win OS",
+      "Sviluppo distribuito"
+    ],
+    "strumenti": [
+      "GitHub",
+      "GitHub Desktop",
+      "Visual Studio Code",
+      "Bootstrap",
+      "Tailwind"
+    ],
+    "linguaggi": [
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ],
+    "ambienti": [
+      "VMware",
+      "Windows Server 2019"
+    ],
+    "descrizione": "Introduzione allo sviluppo web e ai sistemi Windows virtualizzati."
+  },
+  {
+    "id": "2026-01",
+    "mese": "Gennaio 2026",
+    "dataOrdine": "2026-01-01",
+    "materie": [
+      "Linguaggi web",
+      "Database",
+      "Python",
+      "Sistemi di virtualizzazione"
+    ],
+    "strumenti": [
+      "Visual Studio Code",
+      "Docker",
+      "Docker Compose",
+      "DockerHub",
+      "Proxmox",
+      "PostgreSQL"
+    ],
+    "linguaggi": [
+      "Python",
+      "SQL"
+    ],
+    "ambienti": [
+      "VMware",
+      "Windows Server"
+    ],
+    "descrizione": "Sviluppo full stack e introduzione alla virtualizzazione con Docker e Proxmox."
+  },
+  {
+    "id": "2026-02",
+    "mese": "Febbraio 2026",
+    "dataOrdine": "2026-02-01",
+    "materie": [
+      "Linux OS",
+      "Security fundamentals",
+      "Cloud Services"
+    ],
+    "strumenti": [
+      "Docker",
+      "Proxmox"
+    ],
+    "linguaggi": [
+      "Node-RED"
+    ],
+    "ambienti": [
+      "VMware",
+      "Ubuntu",
+      "Kali Linux",
+      "Debian",
+      "AWS"
+    ],
+    "descrizione": "Focus su Linux, sicurezza e prime esperienze nel cloud AWS."
+  },
+  {
+    "id": "2026-03",
+    "mese": "Marzo 2026",
+    "dataOrdine": "2026-03-01",
+    "materie": [
+      "Security fundamentals",
+      "Cloud Services",
+      "Project Work",
+      "Architettura IT",
+      "Storage"
+    ],
+    "strumenti": [
+      "Agile",
+      "Scrum"
+    ],
+    "linguaggi": [],
+    "ambienti": [
+      "VMware",
+      "AWS",
+      "ESXi"
+    ],
+    "descrizione": "Consolidamento su sicurezza e cloud con introduzione al project work e infrastrutture."
+  },
+  {
+    "id": "2026-04",
+    "mese": "Aprile 2026",
+    "dataOrdine": "2026-04-01",
+    "materie": [
+      "Scripting (PowerShell e Bash)",
+      "Cloud Services",
+      "Storage"
+    ],
+    "strumenti": [],
+    "linguaggi": [
+      "PowerShell",
+      "Bash"
+    ],
+    "ambienti": [
+      "AWS",
+      "ESXi"
+    ],
+    "descrizione": "Automazione tramite scripting e gestione avanzata di infrastrutture cloud."
+  },
+  {
+    "id": "2026-05",
+    "mese": "Maggio 2026",
+    "dataOrdine": "2026-05-01",
+    "materie": [
+      "Cloud Services",
+      "Gestione del processo formativo",
+      "Stage in azienda"
+    ],
+    "strumenti": [
+      "PowerPoint"
+    ],
+    "linguaggi": [],
+    "ambienti": [
+      "AWS"
+    ],
+    "descrizione": "Approfondimento finale sul cloud e revisione del percorso formativo. Inizio stage in azienda."
+  },
+  {
+    "id": "2026-06",
+    "mese": "Giugno 2026",
+    "dataOrdine": "2026-06-01",
+    "materie": [
+      "Stage in azienda"
+    ],
+    "strumenti": [],
+    "linguaggi": [],
+    "ambienti": [],
+    "descrizione": "Continuo stage in azienda."
+  },
+  {
+    "id": "2026-07",
+    "mese": "Luglio 2026",
+    "dataOrdine": "2026-07-01",
+    "materie": [
+      "Stage in azienda"
+    ],
+    "strumenti": [],
+    "linguaggi": [],
+    "ambienti": [],
+    "descrizione": "Fine stage in azienda."
+  }
+]

@@ -1,0 +1,211 @@
+:root {
+    --bg-color: #0b1121;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --accent-cyan: #06b6d4;
+    --accent-blue: #3b82f6;
+    --card-bg: #1e293b;
+    --card-border: #334155;
+    --node-completed: #0ea5e9;
+    --node-current: #22d3ee;
+    --node-future: #475569;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Blocco totale dello scroll per forzare tutto in una pagina */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    height: 100vh; 
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.05), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.05), transparent 25%);
+}
+
+header {
+    text-align: center;
+    padding: 2rem 1rem 1rem;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(to right, var(--accent-cyan), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+/* Contenitore Timeline - occupa lo spazio rimanente e centra l'asse */
+.timeline-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    padding: 0 8%; /* Margine laterale aumentato visto che i mesi sono diminuiti */
+}
+
+/* Asse centrale orizzontale */
+.timeline-line {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    height: 4px;
+    background: var(--card-border);
+    border-radius: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.timeline-nodes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+.node-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Nodo sulla linea */
+.timeline-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--node-future);
+    border: 4px solid var(--bg-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    z-index: 5;
+    position: relative;
+}
+
+.status-completed .timeline-dot {
+    background-color: var(--node-completed);
+    box-shadow: 0 0 10px var(--node-completed);
+}
+
+.status-current .timeline-dot {
+    background-color: var(--node-current);
+    box-shadow: 0 0 15px var(--node-current);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.5); }
+    70% { box-shadow: 0 0 0 15px rgba(34, 211, 238, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
+}
+
+/* Etichetta Mese */
+.month-label {
+    position: absolute;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--text-muted);
+    white-space: nowrap;
+    transition: color 0.3s ease;
+    pointer-events: none;
+}
+
+/* Alternanza Etichette Su/Giù */
+.node-container.label-bottom .month-label { top: 30px; }
+.node-container.label-top .month-label { bottom: 30px; }
+
+.node-container:hover .month-label { color: var(--text-main); }
+.node-container.status-current .month-label { color: var(--accent-cyan); }
+.node-container:hover .timeline-dot { transform: scale(1.4); background-color: var(--accent-cyan); }
+
+/* Card (Fumetto) - Si espande in verticale automaticamente */
+.info-card {
+    position: absolute;
+    width: 340px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 20;
+    pointer-events: none;
+}
+
+/* Posizionamento Alternato Tooltip */
+.node-container.tooltip-top .info-card {
+    bottom: 35px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    transform-origin: bottom center;
+}
+.node-container.tooltip-top:hover .info-card {
+    transform: translateX(-50%) scale(1);
+    opacity: 1; visibility: visible;
+}
+.node-container.tooltip-top .info-card::after {
+    content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%) rotate(45deg);
+    width: 12px; height: 12px; background: var(--card-bg); border-right: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border);
+}
+
+.node-container.tooltip-bottom .info-card {
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    transform-origin: top center;
+}
+.node-container.tooltip-bottom:hover .info-card {
+    transform: translateX(-50%) scale(1);
+    opacity: 1; visibility: visible;
+}
+.node-container.tooltip-bottom .info-card::after {
+    content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%) rotate(45deg);
+    width: 12px; height: 12px; background: var(--card-bg); border-left: 1px solid var(--card-border); border-top: 1px solid var(--card-border);
+}
+
+/* Gestione bordi schermo per primo e ultimo nodo */
+.node-container.first-node .info-card { left: -10px; transform: scale(0.9); transform-origin: bottom left; }
+.node-container.first-node.tooltip-top:hover .info-card { transform: scale(1); }
+.node-container.first-node.tooltip-bottom:hover .info-card { transform: scale(1); }
+.node-container.first-node .info-card::after { left: 20px; }
+
+.node-container.last-node .info-card { left: auto; right: -10px; transform: scale(0.9); transform-origin: bottom right; }
+.node-container.last-node.tooltip-top:hover .info-card { transform: scale(1); }
+.node-container.last-node.tooltip-bottom:hover .info-card { transform: scale(1); }
+.node-container.last-node .info-card::after { left: auto; right: 20px; }
+
+/* Contenuti Card */
+.card-title { font-size: 1rem; font-weight: bold; color: var(--text-main); margin-bottom: 0.4rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.4rem; }
+.card-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.6rem; line-height: 1.3; }
+.section-title { font-size: 0.7rem; color: var(--accent-cyan); text-transform: uppercase; margin: 0.4rem 0 0.2rem; font-weight: 600; }
+.tags-container { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); color: var(--text-main); padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; }
+.empty-text { font-size: 0.65rem; color: var(--node-future); font-style: italic; }
