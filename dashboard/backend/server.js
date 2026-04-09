@@ -50,7 +50,8 @@ function isAuthenticated(req, res, next) {
 
 app.use('/storia-del-corso', isAuthenticated, createProxyMiddleware({
     target: 'http://storia-del-corso:80',
-    changeOrigin: true
+    changeOrigin: true,
+    pathRewrite: (path) => path.replace(/^\/storia-del-corso/, '')
 }));
 
 app.post('/api/login', async (req, res) => {
