@@ -12,7 +12,9 @@
       "PowerPoint",
       "PyCharm"
     ],
-    "linguaggi": [],
+    "linguaggi": [
+      "Python"
+    ],
     "ambienti": [],
     "descrizione": "Avvio del corso con lezioni teoriche e primi approcci alla programmazione."
   },
@@ -31,7 +33,9 @@
       "Cisco Packet Tracer",
       "PowerPoint"
     ],
-    "linguaggi": [],
+    "linguaggi": [
+      "Python"
+    ],
     "ambienti": [],
     "descrizione": "Introduzione al networking e consolidamento della programmazione."
   },
@@ -44,6 +48,7 @@
       "Sviluppo distribuito"
     ],
     "strumenti": [
+      "Git",
       "GitHub",
       "GitHub Desktop",
       "Visual Studio Code",
@@ -56,8 +61,9 @@
       "JavaScript"
     ],
     "ambienti": [
-      "VMware",
-      "Windows Server 2019"
+      "VMware Workstation",
+      "Windows Server 2019",
+      "Windows 10"
     ],
     "descrizione": "Introduzione allo sviluppo web e ai sistemi Windows virtualizzati."
   },
@@ -84,8 +90,8 @@
       "SQL"
     ],
     "ambienti": [
-      "VMware",
-      "Windows Server"
+      "VMware Workstation",
+      "Windows Server 2019"
     ],
     "descrizione": "Sviluppo full stack e introduzione alla virtualizzazione con Docker e Proxmox."
   },
@@ -106,9 +112,10 @@
       "Node-RED"
     ],
     "ambienti": [
-      "VMware",
-      "Ubuntu",
+      "VMware Workstation",
+      "Ubuntu Server",
       "Kali Linux",
+      "Windows 10",
       "Debian",
       "AWS"
     ],
@@ -131,9 +138,10 @@
     ],
     "linguaggi": [],
     "ambienti": [
-      "VMware",
-      "AWS",
-      "ESXi"
+      "VMware Workstation",
+      "VMware VSphere",
+      "ESXi",
+      "AWS"
     ],
     "descrizione": "Consolidamento su sicurezza e cloud con introduzione al project work e infrastrutture."
   },
@@ -149,11 +157,12 @@
     "strumenti": [],
     "linguaggi": [
       "PowerShell",
-      "Bash"
+      "Bash (Linux)"
     ],
     "ambienti": [
       "AWS",
-      "ESXi"
+      "ESXi",
+      "VMware VSphere"
     ],
     "descrizione": "Automazione tramite scripting e gestione avanzata di infrastrutture cloud."
   },
@@ -173,7 +182,7 @@
     "ambienti": [
       "AWS"
     ],
-    "descrizione": "Approfondimento finale sul cloud e revisione del percorso formativo. Inizio stage in azienda."
+    "descrizione": "Approfondimento finale sul cloud e revisione del percorso formativo. Progetto Interfaccia Proxmox. Inizio stage in azienda."
   },
   {
     "id": "2026-06",
