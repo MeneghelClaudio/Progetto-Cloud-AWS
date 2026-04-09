@@ -73,7 +73,7 @@ h1 {
     height: 4px;
     background: var(--card-border);
     border-radius: 4px;
-    top: 50%;
+    top: 65%;
     transform: translateY(-50%);
     z-index: 1;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);

@@ -55,10 +55,9 @@ async function loadTimeline() {
             if (item.id < currentMonthId) statusClass = "status-completed";
             if (item.id === currentMonthId) statusClass = "status-current";
 
-            // Alternanza layout
-            const isTop = index % 2 === 0;
-            const tooltipClass = isTop ? "tooltip-top" : "tooltip-bottom";
-            const labelClass = isTop ? "label-bottom" : "label-top";
+            // Layout fisso - tutti sopra la linea
+            const tooltipClass = "tooltip-top";
+            const labelClass = "label-bottom";
 
             // Gestione bordi
             let edgeClass = "";
