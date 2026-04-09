@@ -18,7 +18,6 @@
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Blocco totale dello scroll per forzare tutto in una pagina */
 body {
     background-color: var(--bg-color);
     color: var(--text-main);
@@ -55,7 +54,7 @@ h1 {
     font-size: 1rem;
 }
 
-/* Contenitore Timeline - occupa lo spazio rimanente e centra l'asse */
+/* Timeline */
 .timeline-wrapper {
     flex-grow: 1;
     display: flex;
@@ -64,10 +63,8 @@ h1 {
     position: relative;
     width: 100%;
     padding: 0 8%;
-    /* Margine laterale aumentato visto che i mesi sono diminuiti */
 }
 
-/* Asse centrale orizzontale */
 .timeline-line {
     position: absolute;
     left: 8%;
@@ -78,7 +75,6 @@ h1 {
     top: 75%;
     transform: translateY(-50%);
     z-index: 1;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .timeline-nodes {
@@ -99,7 +95,7 @@ h1 {
     height: 20px;
 }
 
-/* Nodo sulla linea */
+/* Nodo centrato sulla linea */
 .timeline-dot {
     width: 20px;
     height: 20px;
@@ -110,6 +106,8 @@ h1 {
     cursor: pointer;
     z-index: 5;
     position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .status-completed .timeline-dot {
@@ -124,20 +122,12 @@ h1 {
 }
 
 @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.5);
-    }
-
-    70% {
-        box-shadow: 0 0 0 15px rgba(34, 211, 238, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(34, 211, 238, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.5); }
+    70% { box-shadow: 0 0 0 15px rgba(34, 211, 238, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
 }
 
-/* Etichetta Mese */
+/* Etichette */
 .month-label {
     position: absolute;
     font-size: 0.85rem;
@@ -148,7 +138,6 @@ h1 {
     pointer-events: none;
 }
 
-/* Alternanza Etichette Su/Giù */
 .node-container.label-bottom .month-label {
     top: 30px;
 }
@@ -166,11 +155,11 @@ h1 {
 }
 
 .node-container:hover .timeline-dot {
-    transform: scale(1.4);
+    transform: translateY(-50%) scale(1.4);
     background-color: var(--accent-cyan);
 }
 
-/* Card (Fumetto) - Si espande in verticale automaticamente */
+/* Tooltip sopra */
 .info-card {
     position: absolute;
     width: 340px;
@@ -184,23 +173,21 @@ h1 {
     transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 20;
     pointer-events: none;
-}
 
-/* Posizionamento Alternato Tooltip */
-.node-container.tooltip-top .info-card {
     bottom: 35px;
     left: 50%;
     transform: translateX(-50%) scale(0.9);
     transform-origin: bottom center;
 }
 
-.node-container.tooltip-top:hover .info-card {
+.node-container:hover .info-card {
     transform: translateX(-50%) scale(1);
     opacity: 1;
     visibility: visible;
 }
 
-.node-container.tooltip-top .info-card::after {
+/* Freccia */
+.info-card::after {
     content: '';
     position: absolute;
     bottom: -6px;
@@ -213,76 +200,43 @@ h1 {
     border-bottom: 1px solid var(--card-border);
 }
 
-.node-container.tooltip-bottom .info-card {
-    top: 35px;
-    left: 50%;
-    transform: translateX(-50%) scale(0.9);
-    transform-origin: top center;
-}
-
-.node-container.tooltip-bottom:hover .info-card {
-    transform: translateX(-50%) scale(1);
-    opacity: 1;
-    visibility: visible;
-}
-
-.node-container.tooltip-bottom .info-card::after {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%) rotate(45deg);
-    width: 12px;
-    height: 12px;
-    background: var(--card-bg);
-    border-left: 1px solid var(--card-border);
-    border-top: 1px solid var(--card-border);
-}
-
-/* Gestione bordi schermo per primo e ultimo nodo */
+/* Edge fix */
 .node-container.first-node .info-card {
-    left: -10px;
+    left: 0;
     transform: scale(0.9);
     transform-origin: bottom left;
 }
 
-.node-container.first-node.tooltip-top:hover .info-card {
-    transform: scale(1);
-}
-
-.node-container.first-node.tooltip-bottom:hover .info-card {
+.node-container.first-node:hover .info-card {
     transform: scale(1);
 }
 
 .node-container.first-node .info-card::after {
     left: 20px;
+    transform: rotate(45deg);
 }
 
 .node-container.last-node .info-card {
     left: auto;
-    right: -10px;
+    right: 0;
     transform: scale(0.9);
     transform-origin: bottom right;
 }
 
-.node-container.last-node.tooltip-top:hover .info-card {
-    transform: scale(1);
-}
-
-.node-container.last-node.tooltip-bottom:hover .info-card {
+.node-container.last-node:hover .info-card {
     transform: scale(1);
 }
 
 .node-container.last-node .info-card::after {
     left: auto;
     right: 20px;
+    transform: rotate(45deg);
 }
 
-/* Contenuti Card */
+/* Contenuti */
 .card-title {
     font-size: 1rem;
     font-weight: bold;
-    color: var(--text-main);
     margin-bottom: 0.4rem;
     border-bottom: 1px solid var(--card-border);
     padding-bottom: 0.4rem;
@@ -312,7 +266,6 @@ h1 {
 .tag {
     background: rgba(6, 182, 212, 0.1);
     border: 1px solid rgba(6, 182, 212, 0.2);
-    color: var(--text-main);
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 0.65rem;
