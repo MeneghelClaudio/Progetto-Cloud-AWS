@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  mysql:
+    build:
+      context: ./dashboard/database
+      dockerfile: Dockerfile
+    container_name: dashboard-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: dashboard
+      MYSQL_USER: dashboard_user
+      MYSQL_PASSWORD: dashboard_pass
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./dashboard/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - dashboard-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./dashboard/frontend
+      dockerfile: Dockerfile
+    container_name: dashboard-frontend
+    networks:
+      - dashboard-network
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./dashboard/backend
+      dockerfile: Dockerfile
+    container_name: dashboard-backend
+    environment:
+      DB_HOST: mysql
+      DB_USER: dashboard_user
+      DB_PASSWORD: dashboard_pass
+      DB_NAME: dashboard
+      DB_PORT: 3306
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - dashboard-network
+
+  storia-del-corso:
+    build:
+      context: ./storia del corso
+      dockerfile: Dockerfile
+    container_name: storia-del-corso
+    expose:
+      - "80"
+    networks:
+      - dashboard-network
+
+networks:
+  dashboard-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

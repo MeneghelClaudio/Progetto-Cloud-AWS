@@ -1,10 +1,9 @@
 FROM nginx:alpine
 
-# Rimuove i file di default di nginx
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copia tutti i file del tuo progetto
-COPY . /usr/share/nginx/html
+COPY frontend /usr/share/nginx/html
+COPY backend/data.json /usr/share/nginx/html/data.json
+COPY backend/script.js /usr/share/nginx/html/script.js
 
-# Espone la porta 80
 EXPOSE 80
