@@ -88,6 +88,14 @@ h1 {
     z-index: 2;
 }
 
+.node-container:first-child {
+    margin-left: 3%;
+}
+
+.node-container:last-child {
+    margin-right: 3%;
+}
+
 .node-container {
     position: relative;
     display: flex;
