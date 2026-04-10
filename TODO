@@ -1,0 +1,9 @@
+RDS per utenti del db - utilizzare ip pubblico rds!
+
+punto 2 - utilizzare auto scaling group
+
+modificare utenti con i permessi
+
+mettere registrazione nella pagina di login
+
+salvare emergenze sullo stesso rds degli utenti
