@@ -40,6 +40,7 @@ La linea del tempo deve partire da quando è iniziato il corso e concludersi all
 anno.
 Puntando il mouse su ogni nodo, si deve aprire un fumetto con l’elenco delle materie e
 tecnologie scoperte durante le lezioni.
+
 2 - Gestione Emergenze
 Creare una webapp che prenda in carico e gestisca segnalazioni di emergenza.
 Visualizzazione operatore
