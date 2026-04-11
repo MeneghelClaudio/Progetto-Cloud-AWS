@@ -1,5 +1,4 @@
 const express = require('express');
-const session = require('express-session');
 const mysql = require('mysql2/promise');
 
 const app = express();
@@ -20,28 +19,19 @@ async function initDB() {
 
 app.use(express.json());
 
-app.use(session({
-    secret: 'dashboard-secret-key-change-in-production',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: false,
-        httpOnly: true,
-        maxAge: 3600000
-    }
-}));
-
 function isAuthenticated(req, res, next) {
-    if (req.session.userId) {
+    const userId = req.headers['x-user-id'];
+    const username = req.headers['x-username'];
+    const role = req.headers['x-user-role'];
+    if (userId) {
+        req.userId = parseInt(userId);
+        req.username = username;
+        req.role = role;
         next();
     } else {
         res.status(401).json({ error: 'Non autenticato' });
     }
 }
-
-app.use((req, res, next) => {
-    next();
-});
 
 app.get('/api/emergencies', isAuthenticated, async (req, res) => {
     try {
@@ -61,7 +51,7 @@ app.get('/api/emergencies/my', isAuthenticated, async (req, res) => {
     try {
         const [rows] = await pool.execute(
             'SELECT * FROM emergency_requests WHERE user_id = ? ORDER BY created_at DESC',
-            [req.session.userId]
+            [req.userId]
         );
         res.json(rows);
     } catch (err) {
@@ -79,7 +69,7 @@ app.post('/api/emergencies', isAuthenticated, async (req, res) => {
     try {
         await pool.execute(
             'INSERT INTO emergency_requests (user_id, type, description, latitude, longitude) VALUES (?, ?, ?, ?, ?)',
-            [req.session.userId, type, description, latitude || null, longitude || null]
+            [req.userId, type, description, latitude || null, longitude || null]
         );
         res.json({ success: true });
     } catch (err) {

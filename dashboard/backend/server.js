@@ -68,6 +68,19 @@ app.use('/gestione-emergenze', isAuthenticated, createProxyMiddleware({
     pathRewrite: (path) => path.replace(/^\/gestione-emergenze\/?/, '/') || '/'
 }));
 
+// Proxy API calls for gestione-emergenze — auth checked here, forwarded with session userId in header
+app.use('/api/emergencies', isAuthenticated, createProxyMiddleware({
+    target: 'http://gestione-emergenze:80',
+    changeOrigin: true,
+    on: {
+        proxyReq: (proxyReq, req) => {
+            proxyReq.setHeader('X-User-Id', req.session.userId);
+            proxyReq.setHeader('X-Username', req.session.username);
+            proxyReq.setHeader('X-User-Role', req.session.role);
+        }
+    }
+}));
+
 app.post('/api/register', async (req, res) => {
     const { username, password } = req.body;
     

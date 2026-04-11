@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function checkAuth() {
     try {
-        const response = await fetch('/api/auth', {
+        const response = await fetch('/api/check-auth', {
             credentials: 'include'
         });
         const data = await response.json();

@@ -89,11 +89,11 @@ h1 {
 }
 
 .node-container:first-child {
-    margin-left: 10%;
+    margin-left: 5%;
 }
 
 .node-container:last-child {
-    margin-right: 10%;
+    margin-right: 5%;
 }
 
 .node-container {
