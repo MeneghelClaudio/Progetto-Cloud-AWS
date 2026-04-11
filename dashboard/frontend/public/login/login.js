@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (response.ok) {
-                errorMessage.textContent = 'Registrazione completata! Ora puoi accedere.';
+                errorMessage.textContent = 'Registrazione completata! Ora accedi.';
                 errorMessage.classList.add('success');
                 setTimeout(() => {
                     registerCard.style.display = 'none';
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('username').value = username;
                     errorMessage.textContent = '';
                     errorMessage.className = 'error-message';
-                }, 2000);
+                }, 1500);
             } else {
                 errorMessage.textContent = data.error || 'Errore durante la registrazione';
             }
