@@ -1,9 +1,12 @@
-CREATE DATABASE IF NOT EXISTS dashboard;
-USE dashboard;
+USE dashboard_db;
 
-CREATE TABLE IF NOT EXISTS users (
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT INTO users (username, password) VALUES ('admin', 'admin');
