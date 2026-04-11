@@ -23,5 +23,3 @@ CREATE TABLE emergency_requests (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
-INSERT INTO users (username, password, role) VALUES ('admin', 'admin', 'admin');

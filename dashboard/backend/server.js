@@ -18,6 +18,13 @@ let pool;
 
 async function initDB() {
     pool = mysql.createPool(dbConfig);
+    
+    const [rows] = await pool.execute('SELECT id FROM users WHERE username = ?', ['admin']);
+    if (rows.length === 0) {
+        const hash = bcrypt.hashSync('admin', 10);
+        await pool.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', ['admin', hash, 'admin']);
+        console.log('Default user created: admin / admin');
+    }
 }
 
 app.use(express.json());
