@@ -36,6 +36,7 @@ header {
     padding: 2rem 1rem 1rem;
     flex-shrink: 0;
     z-index: 10;
+    position: relative;
 }
 
 h1 {
@@ -52,6 +53,24 @@ h1 {
 .subtitle {
     color: var(--text-muted);
     font-size: 1rem;
+}
+
+.btn-back {
+    position: absolute;
+    top: 2rem;
+    right: 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-back:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
 }
 
 /* Timeline */
@@ -284,19 +303,4 @@ h1 {
     font-size: 0.65rem;
     color: var(--node-future);
     font-style: italic;
-}
-
-.btn-back {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    color: var(--text-muted);
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.btn-back:hover {
-    border-color: var(--accent-cyan);
-    color: var(--accent-cyan);
 }
