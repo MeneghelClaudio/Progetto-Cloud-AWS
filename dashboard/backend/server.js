@@ -10,7 +10,7 @@ const dbConfig = {
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'dashboard',
+    database: process.env.DB_NAME || 'dashboard_db',
     port: process.env.DB_PORT || 3306
 };
 
@@ -18,13 +18,6 @@ let pool;
 
 async function initDB() {
     pool = mysql.createPool(dbConfig);
-    
-    const [rows] = await pool.execute('SELECT id FROM users WHERE username = ?', ['admin']);
-    if (rows.length === 0) {
-        const hash = bcrypt.hashSync('admin', 10);
-        await pool.execute('INSERT INTO users (username, password) VALUES (?, ?)', ['admin', hash]);
-        console.log('Default user created: admin / admin');
-    }
 }
 
 app.use(express.json());
@@ -48,11 +41,49 @@ function isAuthenticated(req, res, next) {
     }
 }
 
+function isAdmin(req, res, next) {
+    if (req.session.role === 'admin') {
+        next();
+    } else {
+        res.status(403).json({ error: 'Accesso negato' });
+    }
+}
+
 app.use('/storia-del-corso', isAuthenticated, createProxyMiddleware({
     target: 'http://storia-del-corso:80',
     changeOrigin: true,
     pathRewrite: (path) => path.replace(/^\/storia-del-corso/, '')
 }));
+
+app.use('/gestione-emergenze', isAuthenticated, createProxyMiddleware({
+    target: 'http://gestione-emergenze-frontend:80',
+    changeOrigin: true,
+    pathRewrite: (path) => path.replace(/^\/gestione-emergenze/, '')
+}));
+
+app.post('/api/register', async (req, res) => {
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username e password richiesti' });
+    }
+    
+    if (username.length < 3 || password.length < 3) {
+        return res.status(400).json({ error: 'Username e password devono essere almeno 3 caratteri' });
+    }
+    
+    try {
+        const hash = bcrypt.hashSync(password, 10);
+        await pool.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', [username, hash, 'user']);
+        res.json({ success: true });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            res.status(400).json({ error: 'Username già esistente' });
+        } else {
+            res.status(500).json({ error: 'Errore del server' });
+        }
+    }
+});
 
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
@@ -70,8 +101,9 @@ app.post('/api/login', async (req, res) => {
         
         req.session.userId = rows[0].id;
         req.session.username = rows[0].username;
+        req.session.role = rows[0].role;
         
-        res.json({ success: true, username: rows[0].username });
+        res.json({ success: true, username: rows[0].username, role: rows[0].role });
     } catch (err) {
         res.status(500).json({ error: 'Errore del server' });
     }
@@ -88,9 +120,53 @@ app.post('/api/logout', (req, res) => {
 
 app.get('/api/check-auth', (req, res) => {
     if (req.session.userId) {
-        res.json({ authenticated: true, username: req.session.username });
+        res.json({ authenticated: true, username: req.session.username, role: req.session.role });
     } else {
         res.json({ authenticated: false });
+    }
+});
+
+app.get('/api/users', isAuthenticated, isAdmin, async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT id, username, role, created_at FROM users ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: 'Errore del server' });
+    }
+});
+
+app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req, res) => {
+    const userId = parseInt(req.params.id);
+    
+    if (userId === req.session.userId) {
+        return res.status(400).json({ error: 'Non puoi eliminare il tuo stesso account' });
+    }
+    
+    try {
+        await pool.execute('DELETE FROM users WHERE id = ? AND role != ?', [userId, 'admin']);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Errore del server' });
+    }
+});
+
+app.put('/api/users/:id/role', isAuthenticated, isAdmin, async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const { role } = req.body;
+    
+    if (userId === req.session.userId) {
+        return res.status(400).json({ error: 'Non puoi modificare il tuo stesso ruolo' });
+    }
+    
+    if (!['user', 'admin'].includes(role)) {
+        return res.status(400).json({ error: 'Ruolo non valido' });
+    }
+    
+    try {
+        await pool.execute('UPDATE users SET role = ? WHERE id = ? AND role != ?', [role, userId, 'admin']);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Errore del server' });
     }
 });
 

@@ -52,6 +52,22 @@ services:
     networks:
       - dashboard-network
 
+  gestione-emergenze:
+    build:
+      context: ./gestione-emergenze
+      dockerfile: Dockerfile
+    container_name: gestione-emergenze
+    expose:
+      - "80"
+    environment:
+      DB_HOST: ${DB_HOST:-syam-meneghel-progetto-cloud-aws-db.c9nj1x2p6gk5.eu-west-1.rds.amazonaws.com}
+      DB_USER: syam_meneghel
+      DB_PASSWORD: ${DB_PASSWORD:-meneghel_password}
+      DB_NAME: dashboard_db
+      DB_PORT: 3306
+    networks:
+      - dashboard-network
+
 networks:
   dashboard-network:
     driver: bridge

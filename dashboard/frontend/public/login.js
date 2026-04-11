@@ -1,29 +1,84 @@
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const errorMessage = document.getElementById('errorMessage');
-    
-    errorMessage.textContent = '';
-    
-    try {
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password }),
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginCard = document.getElementById('loginCard');
+    const registerCard = document.getElementById('registerCard');
+    const showRegister = document.getElementById('showRegister');
+    const showLogin = document.getElementById('showLogin');
+
+    showRegister.addEventListener('click', function(e) {
+        e.preventDefault();
+        loginCard.style.display = 'none';
+        registerCard.style.display = 'block';
+    });
+
+    showLogin.addEventListener('click', function(e) {
+        e.preventDefault();
+        registerCard.style.display = 'none';
+        loginCard.style.display = 'block';
+    });
+
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
         
-        const data = await response.json();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const errorMessage = document.getElementById('errorMessage');
         
-        if (response.ok) {
-            window.location.href = '/dashboard.html';
-        } else {
-            errorMessage.textContent = data.error || 'Credenziali non valide';
+        errorMessage.textContent = '';
+        
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                sessionStorage.setItem('role', data.role);
+                window.location.href = '/dashboard.html';
+            } else {
+                errorMessage.textContent = data.error || 'Credenziali non valide';
+            }
+        } catch (error) {
+            errorMessage.textContent = 'Errore di connessione';
         }
-    } catch (error) {
-        errorMessage.textContent = 'Errore di connessione';
-    }
+    });
+
+    registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('regUsername').value;
+        const password = document.getElementById('regPassword').value;
+        const errorMessage = document.getElementById('regErrorMessage');
+        
+        errorMessage.textContent = '';
+        
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                alert('Registrazione completata! Ora puoi accedere.');
+                registerCard.style.display = 'none';
+                loginCard.style.display = 'block';
+                document.getElementById('username').value = username;
+            } else {
+                errorMessage.textContent = data.error || 'Errore durante la registrazione';
+            }
+        } catch (error) {
+            errorMessage.textContent = 'Errore di connessione';
+        }
+    });
 });

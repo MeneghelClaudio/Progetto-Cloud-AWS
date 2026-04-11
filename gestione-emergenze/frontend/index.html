@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Emergenze</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gestione Emergenze</h1>
+            <a href="/dashboard.html" class="btn-back">← Torna alla Dashboard</a>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card open">
+                <h3 id="countOpen">0</h3>
+                <div class="label">Aperte</div>
+            </div>
+            <div class="stat-card in-carico">
+                <h3 id="countInCarico">0</h3>
+                <div class="label">In Carico</div>
+            </div>
+            <div class="stat-card closed">
+                <h3 id="countClosed">0</h3>
+                <div class="label">Chiuse</div>
+            </div>
+            <div class="stat-card avg">
+                <h3 id="avgDuration">-</h3>
+                <div class="label">Durata Media (min)</div>
+            </div>
+        </div>
+
+        <div class="view-toggle">
+            <button class="btn-view active" onclick="switchView('operator')">Vista Operatore</button>
+            <button class="btn-view" onclick="switchView('central')">Vista Centrale Operativa</button>
+        </div>
+
+        <div id="operatorView" class="content-area">
+            <div class="panel">
+                <h2>Nuova Segnalazione</h2>
+                <form id="emergencyForm">
+                    <div class="form-group">
+                        <label>Tipologia Emergenza</label>
+                        <select id="emergencyType" required>
+                            <option value="incidente">Incidente</option>
+                            <option value="terremoto">Terremoto</option>
+                            <option value="incendio">Incendio</option>
+                            <option value="alluvione">Alluvione</option>
+                            <option value="altro">Altro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrizione</label>
+                        <textarea id="emergencyDesc" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Latitudine</label>
+                        <input type="text" id="emergencyLat" placeholder="es. 45.4642">
+                    </div>
+                    <div class="form-group">
+                        <label>Longitudine</label>
+                        <input type="text" id="emergencyLng" placeholder="es. 9.1900">
+                    </div>
+                    <button type="submit" class="btn-submit">Invia Segnalazione</button>
+                </form>
+            </div>
+            <div class="panel">
+                <h2>Le Mie Segnalazioni</h2>
+                <div class="emergencies-list" id="myEmergencies"></div>
+            </div>
+        </div>
+
+        <div id="centralView" class="content-area" style="display: none;">
+            <div class="panel">
+                <h2>Segnalazioni Attive</h2>
+                <div class="emergencies-list" id="allEmergencies"></div>
+            </div>
+            <div class="panel">
+                <h2>Mappa Emergenze</h2>
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
