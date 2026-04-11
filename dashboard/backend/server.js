@@ -59,13 +59,13 @@ function isAdmin(req, res, next) {
 app.use('/storia-del-corso', isAuthenticated, createProxyMiddleware({
     target: 'http://storia-del-corso:80',
     changeOrigin: true,
-    pathRewrite: (path) => path.replace(/^\/storia-del-corso/, '')
+    pathRewrite: (path) => path.replace(/^\/storia-del-corso\/?/, '/') || '/'
 }));
 
 app.use('/gestione-emergenze', isAuthenticated, createProxyMiddleware({
     target: 'http://gestione-emergenze:80',
     changeOrigin: true,
-    pathRewrite: (path) => path.replace(/^\/gestione-emergenze/, '')
+    pathRewrite: (path) => path.replace(/^\/gestione-emergenze\/?/, '/') || '/'
 }));
 
 app.post('/api/register', async (req, res) => {
