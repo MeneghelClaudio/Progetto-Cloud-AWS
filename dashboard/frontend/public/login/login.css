@@ -112,9 +112,14 @@ body.login-page {
 .error-message {
     color: #ef4444;
     font-size: 0.85rem;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
     text-align: center;
     min-height: 1.2rem;
+}
+
+.error-message.success {
+    color: #22c55e;
 }
 
 header {

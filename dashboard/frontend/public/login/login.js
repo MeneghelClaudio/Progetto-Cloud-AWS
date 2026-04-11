@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const errorMessage = document.getElementById('regErrorMessage');
         
         errorMessage.textContent = '';
+        errorMessage.className = 'error-message';
         
         try {
             const response = await fetch('/api/register', {
@@ -70,10 +71,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (response.ok) {
-                alert('Registrazione completata! Ora puoi accedere.');
-                registerCard.style.display = 'none';
-                loginCard.style.display = 'block';
-                document.getElementById('username').value = username;
+                errorMessage.textContent = 'Registrazione completata! Ora puoi accedere.';
+                errorMessage.classList.add('success');
+                setTimeout(() => {
+                    registerCard.style.display = 'none';
+                    loginCard.style.display = 'block';
+                    document.getElementById('username').value = username;
+                    errorMessage.textContent = '';
+                    errorMessage.className = 'error-message';
+                }, 2000);
             } else {
                 errorMessage.textContent = data.error || 'Errore durante la registrazione';
             }
