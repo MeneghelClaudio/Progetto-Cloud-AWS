@@ -44,7 +44,7 @@ function isAuthenticated(req, res, next) {
     if (req.session.userId) {
         next();
     } else {
-        res.redirect('/login/login.html');
+        res.redirect('/login/');
     }
 }
 
@@ -63,7 +63,7 @@ app.use('/storia-del-corso', isAuthenticated, createProxyMiddleware({
 }));
 
 app.use('/gestione-emergenze', isAuthenticated, createProxyMiddleware({
-    target: 'http://gestione-emergenze-frontend:80',
+    target: 'http://gestione-emergenze:80',
     changeOrigin: true,
     pathRewrite: (path) => path.replace(/^\/gestione-emergenze/, '')
 }));
