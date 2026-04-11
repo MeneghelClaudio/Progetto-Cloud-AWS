@@ -19,13 +19,13 @@ TEMPLATE RELAZIONE:
 --------------------------------------------------------------------------------------------------------------------
 
 TRACCIA:
-Progetto Cloud AWS
+# Progetto Cloud AWS
 
-Obiettivo del progetto
+# Obiettivo del progetto
 Creare un’interfaccia web protetta da login e accessibile a internet che permetta di accedere
 a diversi servizi tramite dei bottoni
 
-Tecnologie da utilizzare
+# Tecnologie da utilizzare
 Utilizzare tutti i servizi AWS necessari per esporre la webapp, mantenendo il focus su
 scalabilità e sicurezza.
 Per i linguaggi di programmazione frontend e backend c’è completa libertà.
@@ -34,35 +34,35 @@ Se siete familiari a git, utilizzare GitHub, GitLab o altri per condividere il c
 compagni.
 Servizi
 
-1 - Storia del corso
+# 1 - Storia del corso
 Creare una pagina con una linea del tempo dinamica, con un nodo per ogni mese.
 La linea del tempo deve partire da quando è iniziato il corso e concludersi alla fine di questo
 anno.
 Puntando il mouse su ogni nodo, si deve aprire un fumetto con l’elenco delle materie e
 tecnologie scoperte durante le lezioni.
 
-2 - Gestione Emergenze
+# 2 - Gestione Emergenze
 Creare una webapp che prenda in carico e gestisca segnalazioni di emergenza.
-Visualizzazione operatore
+# Visualizzazione operatore
 Ogni operatore è in grado di creare una segnalazione (da cellulare) contenente:
-● Tipologia di emergenza (incidente, terremoto, incendio, ...)
-● Descrizione dell’emergenza
-● Condivisione della posizione (dati veri di geolocalizzazione o simulati)
-● Stato della segnalazione (aperta, in carico, annullata, chiusa)
-● Eventuali altri campi se ritenuti necessari
-Visualizzazione centrale operativa
+- Tipologia di emergenza (incidente, terremoto, incendio, ...)
+- Descrizione dell’emergenza
+- Condivisione della posizione (dati veri di geolocalizzazione o simulati)
+- Stato della segnalazione (aperta, in carico, annullata, chiusa)
+- Eventuali altri campi se ritenuti necessari
+# Visualizzazione centrale operativa
 La sede centrale (da PC) visualizza in tempo reale la creazione di nuove richieste e può
 interagirci cambiando lo stato delle richieste.
 Creare una dashboard con i seguenti valori:
-● Numero di segnalazioni aperte e in carico
-● Numero di segnalazioni chiuse
-● Durata media di una segnalazione da apertura a chiusura
-● Mappa con dei punti colorati per ogni richiesta non chiusa e non annullata (rosso =
+- Numero di segnalazioni aperte e in carico
+- Numero di segnalazioni chiuse
+- Durata media di una segnalazione da apertura a chiusura
+- Mappa con dei punti colorati per ogni richiesta non chiusa e non annullata (rosso =
 aperta, blu = in carico)
-● Altri grafici a scelta se li tenete pertinenti
+- Altri grafici a scelta se li tenete pertinenti
 Simulare picchi di traffico sulla piattaforma, eseguendo chiamate api al sito tramite script o
 con il software Locust
-Tecnologie da utilizzare
+# Tecnologie da utilizzare
 Sfruttare un database RDS (lo stesso degli altri progetti) per la gestione del DB
 Containerizzare l’app con Docker e Docker Compose.
 Sfruttare l’auto scaling group per creare nuove istanze se l’applicazione va sotto stress
