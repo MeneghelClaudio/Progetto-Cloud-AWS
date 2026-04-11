@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (response.ok) {
-                errorMessage.textContent = 'Registrazione completata! Ora accedi.';
+                errorMessage.textContent = 'Registrazione completata con successo';
                 errorMessage.classList.add('success');
                 setTimeout(() => {
                     registerCard.style.display = 'none';
