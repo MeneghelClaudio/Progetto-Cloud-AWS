@@ -43,6 +43,69 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/api/emergencies', isAuthenticated, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT er.*, u.username 
+            FROM emergency_requests er 
+            JOIN users u ON er.user_id = u.id 
+            ORDER BY er.created_at DESC
+        `);
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: 'Errore del server' });
+    }
+});
+
+app.get('/api/emergencies/my', isAuthenticated, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(
+            'SELECT * FROM emergency_requests WHERE user_id = ? ORDER BY created_at DESC',
+            [req.session.userId]
+        );
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: 'Errore del server' });
+    }
+});
+
+app.post('/api/emergencies', isAuthenticated, async (req, res) => {
+    const { type, description, latitude, longitude } = req.body;
+    
+    if (!type || !description) {
+        return res.status(400).json({ error: 'Tipologia e descrizione richiesti' });
+    }
+    
+    try {
+        await pool.execute(
+            'INSERT INTO emergency_requests (user_id, type, description, latitude, longitude) VALUES (?, ?, ?, ?, ?)',
+            [req.session.userId, type, description, latitude || null, longitude || null]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Errore del server' });
+    }
+});
+
+app.put('/api/emergencies/:id/status', isAuthenticated, async (req, res) => {
+    const emergencyId = parseInt(req.params.id);
+    const { status } = req.body;
+    
+    if (!['aperta', 'in_carico', 'annullata', 'chiusa'].includes(status)) {
+        return res.status(400).json({ error: 'Stato non valido' });
+    }
+    
+    try {
+        await pool.execute(
+            'UPDATE emergency_requests SET status = ? WHERE id = ?',
+            [status, emergencyId]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Errore del server' });
+    }
+});
+
 app.get('/api/emergencies/stats', isAuthenticated, async (req, res) => {
     try {
         const [[{ open }]] = await pool.execute("SELECT COUNT(*) as open FROM emergency_requests WHERE status = 'aperta'");
