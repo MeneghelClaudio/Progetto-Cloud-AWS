@@ -77,8 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     registerCard.style.display = 'none';
                     loginCard.style.display = 'block';
                     document.getElementById('username').value = username;
-                    errorMessage.textContent = '';
-                    errorMessage.className = 'error-message';
                 }, 1500);
             } else {
                 errorMessage.textContent = data.error || 'Errore durante la registrazione';
