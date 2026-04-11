@@ -54,7 +54,6 @@ Visualizzazione centrale operativa
 La sede centrale (da PC) visualizza in tempo reale la creazione di nuove richieste e può
 interagirci cambiando lo stato delle richieste.
 Creare una dashboard con i seguenti valori:
-
 ● Numero di segnalazioni aperte e in carico
 ● Numero di segnalazioni chiuse
 ● Durata media di una segnalazione da apertura a chiusura
