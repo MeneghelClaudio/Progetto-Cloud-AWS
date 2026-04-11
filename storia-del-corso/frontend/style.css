@@ -71,7 +71,7 @@ h1 {
     height: 4px;
     background: var(--card-border);
     border-radius: 4px;
-    top: 75%;
+    top: 65%;
     transform: translateY(-50%);
     z-index: 1;
 }
@@ -83,17 +83,17 @@ h1 {
     position: absolute;
     left: 0;
     right: 0;
-    top: 75%;
+    top: 65%;
     transform: translateY(-50%);
     z-index: 2;
 }
 
 .node-container:first-child {
-    margin-left: 3%;
+    margin-left: 10%;
 }
 
 .node-container:last-child {
-    margin-right: 3%;
+    margin-right: 10%;
 }
 
 .node-container {
@@ -284,4 +284,19 @@ h1 {
     font-size: 0.65rem;
     color: var(--node-future);
     font-style: italic;
+}
+
+.btn-back {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-back:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
 }

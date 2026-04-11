@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (response.ok) {
                 sessionStorage.setItem('role', data.role);
-                window.location.href = '/dashboard.html';
+                window.location.href = '/dashboard/';
             } else {
                 errorMessage.textContent = data.error || 'Credenziali non valide';
             }

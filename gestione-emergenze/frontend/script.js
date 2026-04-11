@@ -19,10 +19,10 @@ async function checkAuth() {
         });
         const data = await response.json();
         if (!data.authenticated) {
-            window.location.href = '/login.html';
+            window.location.href = '/login/';
         }
     } catch {
-        window.location.href = '/login.html';
+        window.location.href = '/login/';
     }
 }
 

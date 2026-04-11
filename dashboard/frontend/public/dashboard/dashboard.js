@@ -16,10 +16,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                     userManagementBtn.style.display = 'flex';
                 }
             } else {
-                window.location.href = '/login.html';
+                window.location.href = '/login/';
             }
         } catch (error) {
-            window.location.href = '/login.html';
+            window.location.href = '/login/';
         }
     }
 
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     logoutBtn.addEventListener('click', async function() {
         await fetch('/api/logout', { method: 'POST' });
-        window.location.href = '/login.html';
+        window.location.href = '/login/';
     });
 
     userManagementBtn.addEventListener('click', async function(e) {
