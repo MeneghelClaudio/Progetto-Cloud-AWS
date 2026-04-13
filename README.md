@@ -2,8 +2,9 @@ TODO:
 - modificare html storia-del-corso per posizionare meglio timeline+nodi
 - servizio 2 (gestione-emergenze) - utilizzare auto scaling group
 - modificare utenti con i permessi
-- mettere registrazione nella pagina di login
 - salvare emergenze sullo stesso rds degli utenti
+- fare tutto il sito mobile-friendly (soprattutto gestione-emergenze)
+- controllo se funziona la posizione del dispositivo x creazione emergenze (da telefono), non utilizzare poisizione EC2...
 
 --------------------------------------------------------------------------------------------------------------------
 
