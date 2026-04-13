@@ -16,7 +16,7 @@ TEMPLATE RELAZIONE:
         + ALTERNATIVA: security group RDS (syam-meneghel-progetto-cloud-aws-sg-rds -> in 3306 con security group EC2) con aggiunta di peering connection tra ec2 e rds!
     - keypair (syam-meneghel-progetto-cloud-aws-keypair.pem)
 
---------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
 
 TRACCIA:
 # Progetto Cloud AWS
@@ -25,7 +25,7 @@ TRACCIA:
 Creare un’interfaccia web protetta da login e accessibile a internet che permetta di accedere
 a diversi servizi tramite dei bottoni
 
-# Tecnologie da utilizzare
+## Tecnologie da utilizzare
 Utilizzare tutti i servizi AWS necessari per esporre la webapp, mantenendo il focus su
 scalabilità e sicurezza.
 Per i linguaggi di programmazione frontend e backend c’è completa libertà.
@@ -43,14 +43,14 @@ tecnologie scoperte durante le lezioni.
 
 # 2 - Gestione Emergenze
 Creare una webapp che prenda in carico e gestisca segnalazioni di emergenza.
-# Visualizzazione operatore
+## Visualizzazione operatore
 Ogni operatore è in grado di creare una segnalazione (da cellulare) contenente:
 - Tipologia di emergenza (incidente, terremoto, incendio, ...)
 - Descrizione dell’emergenza
 - Condivisione della posizione (dati veri di geolocalizzazione o simulati)
 - Stato della segnalazione (aperta, in carico, annullata, chiusa)
 - Eventuali altri campi se ritenuti necessari
-# Visualizzazione centrale operativa
+## Visualizzazione centrale operativa
 La sede centrale (da PC) visualizza in tempo reale la creazione di nuove richieste e può
 interagirci cambiando lo stato delle richieste.
 Creare una dashboard con i seguenti valori:
@@ -62,7 +62,7 @@ aperta, blu = in carico)
 - Altri grafici a scelta se li tenete pertinenti
 Simulare picchi di traffico sulla piattaforma, eseguendo chiamate api al sito tramite script o
 con il software Locust
-# Tecnologie da utilizzare
+## Tecnologie da utilizzare
 Sfruttare un database RDS (lo stesso degli altri progetti) per la gestione del DB
 Containerizzare l’app con Docker e Docker Compose.
 Sfruttare l’auto scaling group per creare nuove istanze se l’applicazione va sotto stress
