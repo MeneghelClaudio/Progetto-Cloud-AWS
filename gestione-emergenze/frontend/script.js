@@ -14,9 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function checkAuth() {
     try {
-        const response = await fetch('/api/check-auth', {
-            credentials: 'include'
-        });
+        const response = await fetch('/api/check-auth', { credentials: 'include' });
         const data = await response.json();
         if (!data.authenticated) {
             window.location.href = '/login/';
@@ -26,6 +24,49 @@ async function checkAuth() {
     }
 }
 
+// ── Geolocation ──────────────────────────────────────────────
+function useMyLocation() {
+    const btn = document.getElementById('geoBtn');
+    const status = document.getElementById('geoStatus');
+
+    if (!navigator.geolocation) {
+        status.textContent = 'Geolocalizzazione non supportata dal browser.';
+        status.className = 'geo-status error';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Rilevamento...';
+    status.textContent = '';
+    status.className = 'geo-status';
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const lat = pos.coords.latitude.toFixed(6);
+            const lng = pos.coords.longitude.toFixed(6);
+            document.getElementById('emergencyLat').value = lat;
+            document.getElementById('emergencyLng').value = lng;
+            btn.disabled = false;
+            btn.textContent = '📍 Usa posizione';
+            status.textContent = `✓ Posizione rilevata: ${lat}, ${lng}`;
+            status.className = 'geo-status success';
+        },
+        (err) => {
+            btn.disabled = false;
+            btn.textContent = '📍 Usa posizione';
+            const msgs = {
+                1: 'Permesso negato. Abilita la geolocalizzazione nel browser.',
+                2: 'Posizione non disponibile.',
+                3: 'Timeout. Riprova.'
+            };
+            status.textContent = msgs[err.code] || 'Errore sconosciuto.';
+            status.className = 'geo-status error';
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+}
+
+// ── Stats ────────────────────────────────────────────────────
 async function loadStats() {
     try {
         const res = await fetch('/api/emergencies/stats');
@@ -39,11 +80,13 @@ async function loadStats() {
     }
 }
 
+// ── Lists ────────────────────────────────────────────────────
 async function loadMyEmergencies() {
     try {
         const res = await fetch('/api/emergencies/my');
         const emergencies = await res.json();
-        document.getElementById('myEmergencies').innerHTML = emergencies.map(e => createEmergencyHTML(e, false)).join('');
+        document.getElementById('myEmergencies').innerHTML =
+            emergencies.length ? emergencies.map(e => createEmergencyHTML(e, false)).join('') : '<p class="empty">Nessuna segnalazione.</p>';
     } catch (err) {
         console.error('Errore:', err);
     }
@@ -53,7 +96,8 @@ async function loadAllEmergencies() {
     try {
         const res = await fetch('/api/emergencies');
         const emergencies = await res.json();
-        document.getElementById('allEmergencies').innerHTML = emergencies.map(e => createEmergencyHTML(e, true)).join('');
+        document.getElementById('allEmergencies').innerHTML =
+            emergencies.length ? emergencies.map(e => createEmergencyHTML(e, true)).join('') : '<p class="empty">Nessuna segnalazione.</p>';
         updateMap(emergencies);
     } catch (err) {
         console.error('Errore:', err);
@@ -61,7 +105,7 @@ async function loadAllEmergencies() {
 }
 
 function createEmergencyHTML(e, showActions) {
-    const statusLabel = e.status === 'in_carico' ? 'In Carico' : e.status;
+    const statusLabel = e.status === 'in_carico' ? 'In Carico' : e.status.charAt(0).toUpperCase() + e.status.slice(1);
     return `
         <div class="emergency-item">
             <div class="header">
@@ -80,6 +124,7 @@ function createEmergencyHTML(e, showActions) {
     `;
 }
 
+// ── Create / Update ──────────────────────────────────────────
 async function createEmergency() {
     const data = {
         type: document.getElementById('emergencyType').value,
@@ -94,12 +139,16 @@ async function createEmergency() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-        
+
         if (res.ok) {
             document.getElementById('emergencyForm').reset();
+            document.getElementById('geoStatus').textContent = '';
             loadStats();
             loadMyEmergencies();
-            loadAllEmergencies();
+            // Se la vista centrale è aperta, aggiorna anche quella
+            if (document.getElementById('centralView').style.display !== 'none') {
+                loadAllEmergencies();
+            }
             alert('Segnalazione inviata!');
         } else {
             const err = await res.json();
@@ -117,7 +166,7 @@ async function updateStatus(id, status) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status })
         });
-        
+
         if (res.ok) {
             loadStats();
             loadMyEmergencies();
@@ -130,10 +179,11 @@ async function updateStatus(id, status) {
     }
 }
 
+// ── View toggle ──────────────────────────────────────────────
 function switchView(view) {
     document.querySelectorAll('.btn-view').forEach(b => b.classList.remove('active'));
     event.target.classList.add('active');
-    
+
     if (view === 'operator') {
         document.getElementById('operatorView').style.display = 'grid';
         document.getElementById('centralView').style.display = 'none';
@@ -142,49 +192,52 @@ function switchView(view) {
         document.getElementById('centralView').style.display = 'grid';
         loadAllEmergencies();
         initMap();
-        setTimeout(() => {
-            if (map) map.invalidateSize();
-        }, 100);
+        setTimeout(() => { if (map) map.invalidateSize(); }, 300);
     }
 }
 
+// ── Map ──────────────────────────────────────────────────────
 function initMap() {
     if (map) return;
-    
     const mapContainer = document.getElementById('map');
     if (!mapContainer) return;
-    
+
     map = L.map('map').setView([41.8719, 12.5674], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 }
 
 function updateMap(emergencies) {
     if (!map) return;
-    
+
     markers.forEach(m => map.removeLayer(m));
     markers.length = 0;
-    
-    const activeEmergencies = emergencies.filter(e => 
-        e.status !== 'chiusa' && 
-        e.status !== 'annullata' && 
-        e.latitude && 
+
+    const active = emergencies.filter(e =>
+        e.status !== 'chiusa' &&
+        e.status !== 'annullata' &&
+        e.latitude &&
         e.longitude
     );
-    
-    activeEmergencies.forEach(e => {
-        const color = e.status === 'aperta' ? 'red' : 'blue';
-        const marker = L.circleMarker([e.latitude, e.longitude], {
+
+    active.forEach(e => {
+        const color = e.status === 'aperta' ? '#ef4444' : '#f97316';
+        const marker = L.circleMarker([parseFloat(e.latitude), parseFloat(e.longitude)], {
             color: color,
             fillColor: color,
-            fillOpacity: 0.7,
-            radius: 10
-        }).addTo(map).bindPopup(`${e.type.toUpperCase()}<br>${e.status}`);
+            fillOpacity: 0.8,
+            radius: 10,
+            weight: 2
+        }).addTo(map).bindPopup(`
+            <strong>${e.type.toUpperCase()}</strong><br>
+            ${e.description}<br>
+            <em>${e.status === 'in_carico' ? 'In Carico' : e.status}</em>
+        `);
         markers.push(marker);
     });
-    
+
     if (markers.length > 0) {
-        map.fitBounds(L.featureGroup(markers).getBounds());
+        map.fitBounds(L.featureGroup(markers).getBounds(), { padding: [40, 40] });
     }
 }

@@ -56,12 +56,13 @@
                         <textarea id="emergencyDesc" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Latitudine</label>
-                        <input type="text" id="emergencyLat" placeholder="es. 45.4642">
-                    </div>
-                    <div class="form-group">
-                        <label>Longitudine</label>
-                        <input type="text" id="emergencyLng" placeholder="es. 9.1900">
+                        <label>Posizione</label>
+                        <div class="geo-row">
+                            <input type="text" id="emergencyLat" placeholder="Latitudine es. 45.4642">
+                            <input type="text" id="emergencyLng" placeholder="Longitudine es. 9.1900">
+                            <button type="button" class="btn-geo" id="geoBtn" onclick="useMyLocation()">📍 Usa posizione</button>
+                        </div>
+                        <div id="geoStatus" class="geo-status"></div>
                     </div>
                     <button type="submit" class="btn-submit">Invia Segnalazione</button>
                 </form>

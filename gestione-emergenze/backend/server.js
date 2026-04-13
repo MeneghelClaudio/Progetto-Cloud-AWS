@@ -61,15 +61,33 @@ app.get('/api/emergencies/my', isAuthenticated, async (req, res) => {
 
 app.post('/api/emergencies', isAuthenticated, async (req, res) => {
     const { type, description, latitude, longitude } = req.body;
-    
+
     if (!type || !description) {
         return res.status(400).json({ error: 'Tipologia e descrizione richiesti' });
     }
-    
+
+    // Normalizza: stringa vuota o undefined → null
+    const lat = (latitude !== undefined && latitude !== null && latitude !== '')
+        ? parseFloat(latitude) : null;
+    const lng = (longitude !== undefined && longitude !== null && longitude !== '')
+        ? parseFloat(longitude) : null;
+
+    // Validazione range
+    if (lat !== null && (isNaN(lat) || lat < -90 || lat > 90)) {
+        return res.status(400).json({ error: 'Latitudine non valida (range: -90 / +90)' });
+    }
+    if (lng !== null && (isNaN(lng) || lng < -180 || lng > 180)) {
+        return res.status(400).json({ error: 'Longitudine non valida (range: -180 / +180)' });
+    }
+    // Devono essere entrambe presenti o entrambe assenti
+    if ((lat === null) !== (lng === null)) {
+        return res.status(400).json({ error: 'Latitudine e longitudine devono essere entrambe presenti o entrambe assenti' });
+    }
+
     try {
         await pool.execute(
             'INSERT INTO emergency_requests (user_id, type, description, latitude, longitude) VALUES (?, ?, ?, ?, ?)',
-            [req.userId, type, description, latitude || null, longitude || null]
+            [req.userId, type, description, lat, lng]
         );
         res.json({ success: true });
     } catch (err) {
@@ -80,11 +98,11 @@ app.post('/api/emergencies', isAuthenticated, async (req, res) => {
 app.put('/api/emergencies/:id/status', isAuthenticated, async (req, res) => {
     const emergencyId = parseInt(req.params.id);
     const { status } = req.body;
-    
+
     if (!['aperta', 'in_carico', 'annullata', 'chiusa'].includes(status)) {
         return res.status(400).json({ error: 'Stato non valido' });
     }
-    
+
     try {
         await pool.execute(
             'UPDATE emergency_requests SET status = ? WHERE id = ?',
@@ -101,13 +119,13 @@ app.get('/api/emergencies/stats', isAuthenticated, async (req, res) => {
         const [[{ open }]] = await pool.execute("SELECT COUNT(*) as open FROM emergency_requests WHERE status = 'aperta'");
         const [[{ in_carico }]] = await pool.execute("SELECT COUNT(*) as in_carico FROM emergency_requests WHERE status = 'in_carico'");
         const [[{ closed }]] = await pool.execute("SELECT COUNT(*) as closed FROM emergency_requests WHERE status = 'chiusa'");
-        
+
         const [[{ avg_duration }]] = await pool.execute(`
             SELECT AVG(TIMESTAMPDIFF(MINUTE, created_at, updated_at)) as avg_duration 
             FROM emergency_requests 
             WHERE status = 'chiusa' AND updated_at > created_at
         `);
-        
+
         res.json({ open: open || 0, in_carico: in_carico || 0, closed: closed || 0, avg_duration: avg_duration || null });
     } catch (err) {
         res.status(500).json({ error: 'Errore del server' });
