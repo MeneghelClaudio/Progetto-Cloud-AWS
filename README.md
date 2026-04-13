@@ -16,6 +16,7 @@ TEMPLATE RELAZIONE:
     - security groups: EC2 (syam-meneghel-progetto-cloud-aws-sg-ec2 -> in-out 22 80, out all-tcp)
         + ALTERNATIVA: security group RDS (syam-meneghel-progetto-cloud-aws-sg-rds -> in 3306 con security group EC2) con aggiunta di peering connection tra ec2 e rds!
     - keypair (syam-meneghel-progetto-cloud-aws-keypair.pem)
+- ottenere posizione del dispositivo x creare segnalazione: NON FUNZIONA su http, funziona solo su https o localhost, quindi servirebbe un dominio o altre soluzioni...
 
 -------------------------------------------------------------------------------------------------------------------
 
