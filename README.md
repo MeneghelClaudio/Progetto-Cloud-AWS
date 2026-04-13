@@ -6,7 +6,7 @@ TODO:
 - fare tutto il sito mobile-friendly (soprattutto gestione-emergenze)
 - controllo se funziona la posizione del dispositivo x creazione emergenze (da telefono), non utilizzare poisizione EC2...
 
---------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
 
 TEMPLATE RELAZIONE:
 - struttura progetto: 5 container (frontend, backend, init-db che inizializza RDS, storia-del-corso, gestione-emergenze)

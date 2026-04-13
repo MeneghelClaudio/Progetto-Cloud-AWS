@@ -142,6 +142,9 @@ function switchView(view) {
         document.getElementById('centralView').style.display = 'grid';
         loadAllEmergencies();
         initMap();
+        setTimeout(() => {
+            if (map) map.invalidateSize();
+        }, 100);
     }
 }
 
