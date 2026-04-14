@@ -11,19 +11,24 @@ const dbConfig = {
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'dashboard_db',
-    port: process.env.DB_PORT || 3306
+    port: process.env.DB_PORT || 3306,
+    ssl: { rejectUnauthorized: false }
 };
 
 let pool;
 
 async function initDB() {
     pool = mysql.createPool(dbConfig);
-    
+
+    // Crea superadmin di default se non esiste
     const [rows] = await pool.execute('SELECT id FROM users WHERE username = ?', ['admin']);
     if (rows.length === 0) {
         const hash = bcrypt.hashSync('admin', 10);
-        await pool.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', ['admin', hash, 'admin']);
-        console.log('Default user created: admin / admin');
+        await pool.execute(
+            'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+            ['admin', hash, 'superadmin']
+        );
+        console.log('Default superadmin created: admin / admin');
     }
 }
 
@@ -33,28 +38,25 @@ app.use(session({
     secret: 'dashboard-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
-    cookie: {
-        secure: false,
-        httpOnly: true,
-        maxAge: 3600000
-    }
+    cookie: { secure: false, httpOnly: true, maxAge: 3600000 }
 }));
 
 function isAuthenticated(req, res, next) {
-    if (req.session.userId) {
-        next();
-    } else {
-        res.redirect('/login/');
-    }
+    if (req.session.userId) return next();
+    res.redirect('/login/');
 }
 
 function isAdmin(req, res, next) {
-    if (req.session.role === 'admin') {
-        next();
-    } else {
-        res.status(403).json({ error: 'Accesso negato' });
-    }
+    if (req.session.role === 'admin' || req.session.role === 'superadmin') return next();
+    res.status(403).json({ error: 'Accesso negato' });
 }
+
+function isSuperAdmin(req, res, next) {
+    if (req.session.role === 'superadmin') return next();
+    res.status(403).json({ error: 'Solo il superadmin può eseguire questa operazione' });
+}
+
+// ── Proxy microservizi ────────────────────────────────────────────────────────
 
 app.use('/storia-del-corso', isAuthenticated, createProxyMiddleware({
     target: 'http://storia-del-corso:80',
@@ -68,10 +70,11 @@ app.use('/gestione-emergenze', isAuthenticated, createProxyMiddleware({
     pathRewrite: (path) => path.replace(/^\/gestione-emergenze\/?/, '/') || '/'
 }));
 
-// Proxy API calls for gestione-emergenze — auth checked here, forwarded with session userId in header
+// Proxy API emergenze → gestione-emergenze, con headers autenticazione
 app.use('/api/emergencies', isAuthenticated, createProxyMiddleware({
     target: 'http://gestione-emergenze:80',
     changeOrigin: true,
+    // NON riscriviamo il path: /api/emergencies deve arrivare come /api/emergencies
     on: {
         proxyReq: (proxyReq, req) => {
             proxyReq.setHeader('X-User-Id', req.session.userId);
@@ -81,48 +84,41 @@ app.use('/api/emergencies', isAuthenticated, createProxyMiddleware({
     }
 }));
 
+// ── Auth ──────────────────────────────────────────────────────────────────────
+
 app.post('/api/register', async (req, res) => {
     const { username, password } = req.body;
-    
-    if (!username || !password) {
+    if (!username || !password)
         return res.status(400).json({ error: 'Username e password richiesti' });
-    }
-    
-    if (username.length < 3 || password.length < 3) {
+    if (username.length < 3 || password.length < 3)
         return res.status(400).json({ error: 'Username e password devono essere almeno 3 caratteri' });
-    }
-    
     try {
         const hash = bcrypt.hashSync(password, 10);
-        await pool.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', [username, hash, 'user']);
+        await pool.execute(
+            'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+            [username, hash, 'user']
+        );
         res.json({ success: true });
     } catch (err) {
-        if (err.code === 'ER_DUP_ENTRY') {
+        if (err.code === 'ER_DUP_ENTRY')
             res.status(400).json({ error: 'Username già esistente' });
-        } else {
+        else
             res.status(500).json({ error: 'Errore del server' });
-        }
     }
 });
 
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
-    
-    if (!username || !password) {
+    if (!username || !password)
         return res.status(400).json({ error: 'Username e password richiesti' });
-    }
-    
     try {
         const [rows] = await pool.execute('SELECT * FROM users WHERE username = ?', [username]);
-        
-        if (rows.length === 0 || !bcrypt.compareSync(password, rows[0].password)) {
+        if (rows.length === 0 || !bcrypt.compareSync(password, rows[0].password))
             return res.status(401).json({ error: 'Credenziali non valide' });
-        }
-        
+
         req.session.userId = rows[0].id;
         req.session.username = rows[0].username;
         req.session.role = rows[0].role;
-        
         res.json({ success: true, username: rows[0].username, role: rows[0].role });
     } catch (err) {
         res.status(500).json({ error: 'Errore del server' });
@@ -131,24 +127,25 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/api/logout', (req, res) => {
     req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Errore durante il logout' });
-        }
+        if (err) return res.status(500).json({ error: 'Errore durante il logout' });
         res.json({ success: true });
     });
 });
 
 app.get('/api/check-auth', (req, res) => {
-    if (req.session.userId) {
+    if (req.session.userId)
         res.json({ authenticated: true, username: req.session.username, role: req.session.role });
-    } else {
+    else
         res.json({ authenticated: false });
-    }
 });
+
+// ── Gestione utenti ───────────────────────────────────────────────────────────
 
 app.get('/api/users', isAuthenticated, isAdmin, async (req, res) => {
     try {
-        const [rows] = await pool.execute('SELECT id, username, role, created_at FROM users ORDER BY created_at DESC');
+        const [rows] = await pool.execute(
+            'SELECT id, username, role, created_at FROM users ORDER BY created_at DESC'
+        );
         res.json(rows);
     } catch (err) {
         res.status(500).json({ error: 'Errore del server' });
@@ -156,14 +153,26 @@ app.get('/api/users', isAuthenticated, isAdmin, async (req, res) => {
 });
 
 app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req, res) => {
-    const userId = parseInt(req.params.id);
-    
-    if (userId === req.session.userId) {
+    const targetId = parseInt(req.params.id);
+    if (targetId === req.session.userId)
         return res.status(400).json({ error: 'Non puoi eliminare il tuo stesso account' });
-    }
-    
+
     try {
-        await pool.execute('DELETE FROM users WHERE id = ? AND role != ?', [userId, 'admin']);
+        const [rows] = await pool.execute('SELECT role FROM users WHERE id = ?', [targetId]);
+        if (rows.length === 0)
+            return res.status(404).json({ error: 'Utente non trovato' });
+
+        const targetRole = rows[0].role;
+
+        // Solo superadmin può eliminare admin o superadmin
+        if ((targetRole === 'admin' || targetRole === 'superadmin') && req.session.role !== 'superadmin')
+            return res.status(403).json({ error: 'Solo il superadmin può eliminare altri admin' });
+
+        // Nessuno può eliminare il superadmin
+        if (targetRole === 'superadmin')
+            return res.status(403).json({ error: 'Il superadmin non può essere eliminato' });
+
+        await pool.execute('DELETE FROM users WHERE id = ?', [targetId]);
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Errore del server' });
@@ -171,19 +180,31 @@ app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req, res) => {
 });
 
 app.put('/api/users/:id/role', isAuthenticated, isAdmin, async (req, res) => {
-    const userId = parseInt(req.params.id);
+    const targetId = parseInt(req.params.id);
     const { role } = req.body;
-    
-    if (userId === req.session.userId) {
+
+    if (targetId === req.session.userId)
         return res.status(400).json({ error: 'Non puoi modificare il tuo stesso ruolo' });
-    }
-    
-    if (!['user', 'admin'].includes(role)) {
+
+    if (!['user', 'admin'].includes(role))
         return res.status(400).json({ error: 'Ruolo non valido' });
-    }
-    
+
     try {
-        await pool.execute('UPDATE users SET role = ? WHERE id = ? AND role != ?', [role, userId, 'admin']);
+        const [rows] = await pool.execute('SELECT role FROM users WHERE id = ?', [targetId]);
+        if (rows.length === 0)
+            return res.status(404).json({ error: 'Utente non trovato' });
+
+        const targetRole = rows[0].role;
+
+        // Solo superadmin può modificare ruolo di admin/superadmin
+        if ((targetRole === 'admin' || targetRole === 'superadmin') && req.session.role !== 'superadmin')
+            return res.status(403).json({ error: 'Solo il superadmin può modificare il ruolo di altri admin' });
+
+        // Il ruolo superadmin non si può assegnare tramite API
+        if (targetRole === 'superadmin')
+            return res.status(403).json({ error: 'Il ruolo superadmin non può essere modificato' });
+
+        await pool.execute('UPDATE users SET role = ? WHERE id = ?', [role, targetId]);
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Errore del server' });
@@ -191,11 +212,8 @@ app.put('/api/users/:id/role', isAuthenticated, isAdmin, async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-
 initDB().then(() => {
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`Server running on port ${PORT}`);
-    });
+    app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
 }).catch(err => {
     console.error('Failed to connect to DB:', err);
     process.exit(1);

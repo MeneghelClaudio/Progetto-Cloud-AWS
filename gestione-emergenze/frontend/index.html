@@ -37,6 +37,7 @@
             <button class="btn-view" onclick="switchView('central')">Vista Centrale Operativa</button>
         </div>
 
+        <!-- VISTA OPERATORE -->
         <div id="operatorView" class="content-area">
             <div class="panel">
                 <h2>Nuova Segnalazione</h2>
@@ -53,17 +54,32 @@
                     </div>
                     <div class="form-group">
                         <label>Descrizione</label>
-                        <textarea id="emergencyDesc" required></textarea>
+                        <textarea id="emergencyDesc" required placeholder="Descrivi l'emergenza..."></textarea>
                     </div>
+
+                    <!-- Sezione posizione -->
                     <div class="form-group">
-                        <label>Posizione</label>
-                        <div class="geo-row">
-                            <input type="text" id="emergencyLat" placeholder="Latitudine es. 45.4642">
-                            <input type="text" id="emergencyLng" placeholder="Longitudine es. 9.1900">
-                            <button type="button" class="btn-geo" id="geoBtn" onclick="useMyLocation()">📍 Usa posizione</button>
+                        <label>Posizione <span class="label-hint">(opzionale)</span></label>
+                        <div class="geo-toolbar">
+                            <button type="button" class="btn-geo" id="geoBtn" onclick="useMyLocation()">📍 Usa GPS</button>
+                            <span class="geo-sep">oppure cerca un luogo</span>
                         </div>
+                        <div class="search-row">
+                            <input type="text" id="addressSearch" placeholder="Es. Via Roma, Milano" autocomplete="off">
+                            <button type="button" class="btn-search" onclick="searchAddress()">🔍</button>
+                        </div>
+                        <div id="searchResults" class="search-results" style="display:none;"></div>
                         <div id="geoStatus" class="geo-status"></div>
+                        <div class="coord-row">
+                            <input type="text" id="emergencyLat" placeholder="Latitudine" readonly>
+                            <input type="text" id="emergencyLng" placeholder="Longitudine" readonly>
+                            <button type="button" class="btn-clear-geo" onclick="clearLocation()" title="Rimuovi posizione">✕</button>
+                        </div>
+                        <!-- Mappa di selezione -->
+                        <div id="pickMap" class="pick-map"></div>
+                        <p class="pick-hint">Clicca sulla mappa per posizionare il marker</p>
                     </div>
+
                     <button type="submit" class="btn-submit">Invia Segnalazione</button>
                 </form>
             </div>
@@ -73,14 +89,19 @@
             </div>
         </div>
 
+        <!-- VISTA CENTRALE OPERATIVA -->
         <div id="centralView" class="content-area" style="display: none;">
             <div class="panel">
-                <h2>Segnalazioni Attive</h2>
+                <h2>Segnalazioni Attive <span class="live-badge">● LIVE</span></h2>
                 <div class="emergencies-list" id="allEmergencies"></div>
             </div>
-            <div class="panel">
+            <div class="panel map-panel">
                 <h2>Mappa Emergenze</h2>
                 <div id="map"></div>
+                <div class="map-legend">
+                    <span class="legend-dot red"></span> Aperta
+                    <span class="legend-dot blue"></span> In Carico
+                </div>
             </div>
         </div>
     </div>

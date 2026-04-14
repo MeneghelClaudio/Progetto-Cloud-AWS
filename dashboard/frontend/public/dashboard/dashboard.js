@@ -5,14 +5,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     const closeModal = document.querySelector('.close');
     const usernameSpan = document.getElementById('username');
 
+    let currentRole = null;
+
     async function checkAuth() {
         try {
             const response = await fetch('/api/check-auth');
             const data = await response.json();
-            
             if (data.authenticated) {
                 usernameSpan.textContent = data.username;
-                if (data.role === 'admin') {
+                currentRole = data.role;
+                // Sia admin che superadmin vedono la gestione utenti
+                if (data.role === 'admin' || data.role === 'superadmin') {
                     userManagementBtn.style.display = 'flex';
                 }
             } else {
@@ -36,37 +39,54 @@ document.addEventListener('DOMContentLoaded', async function() {
         loadUsers();
     });
 
-    closeModal.addEventListener('click', function() {
-        userModal.style.display = 'none';
-    });
-
+    closeModal.addEventListener('click', function() { userModal.style.display = 'none'; });
     window.addEventListener('click', function(e) {
-        if (e.target === userModal) {
-            userModal.style.display = 'none';
-        }
+        if (e.target === userModal) userModal.style.display = 'none';
     });
 
     async function loadUsers() {
         try {
             const response = await fetch('/api/users');
             const users = await response.json();
-            
+            const isSuperAdmin = currentRole === 'superadmin';
+
             const usersList = document.getElementById('usersList');
-            usersList.innerHTML = '<table class="users-table"><thead><tr><th>Username</th><th>Ruolo</th><th>Azioni</th></tr></thead><tbody>' +
-                users.map(user => `
-                    <tr>
+            usersList.innerHTML =
+                '<table class="users-table">' +
+                '<thead><tr><th>Username</th><th>Ruolo</th><th>Azioni</th></tr></thead><tbody>' +
+                users.map(user => {
+                    const isSelf = user.username === usernameSpan.textContent;
+                    const isTargetSuperAdmin = user.role === 'superadmin';
+                    // Il select è disabilitato se:
+                    // - è se stesso
+                    // - è superadmin
+                    // - è un admin e chi guarda non è superadmin
+                    const selectDisabled = isSelf || isTargetSuperAdmin || (user.role === 'admin' && !isSuperAdmin);
+                    // Il pulsante elimina è visibile se:
+                    // - non è se stesso, non è superadmin
+                    // - se è admin, solo il superadmin può eliminarlo
+                    const canDelete = !isSelf && !isTargetSuperAdmin && (user.role !== 'admin' || isSuperAdmin);
+                    const roleLabel = { user: 'User', admin: 'Admin', superadmin: 'Superadmin' }[user.role] || user.role;
+
+                    return `<tr>
                         <td>${user.username}</td>
                         <td>
-                            <select onchange="changeRole(${user.id}, this.value)" ${user.role === 'admin' ? 'disabled' : ''}>
-                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
-                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-                            </select>
+                            ${selectDisabled
+                                ? `<span class="role-badge role-${user.role}">${roleLabel}</span>`
+                                : `<select onchange="changeRole(${user.id}, this.value)">
+                                    <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                                    <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                   </select>`
+                            }
                         </td>
                         <td>
-                            ${user.role !== 'admin' ? `<button onclick="deleteUser(${user.id})" class="btn-delete">Elimina</button>` : '-'}
+                            ${canDelete
+                                ? `<button onclick="deleteUser(${user.id})" class="btn-delete">Elimina</button>`
+                                : '-'}
                         </td>
-                    </tr>
-                `).join('') + '</tbody></table>';
+                    </tr>`;
+                }).join('') +
+                '</tbody></table>';
         } catch (error) {
             console.error('Errore nel caricamento utenti:', error);
         }
@@ -80,10 +100,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                 body: JSON.stringify({ role })
             });
             if (response.ok) {
-                alert('Ruolo aggiornato');
                 loadUsers();
             } else {
-                alert('Errore aggiornamento ruolo');
+                const err = await response.json();
+                alert(err.error || 'Errore aggiornamento ruolo');
+                loadUsers(); // ripristina select
             }
         } catch (error) {
             console.error('Errore:', error);
@@ -92,14 +113,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     window.deleteUser = async function(userId) {
         if (!confirm('Sei sicuro di voler eliminare questo utente?')) return;
-        
         try {
             const response = await fetch(`/api/users/${userId}`, { method: 'DELETE' });
             if (response.ok) {
-                alert('Utente eliminato');
                 loadUsers();
             } else {
-                alert('Errore eliminazione utente');
+                const err = await response.json();
+                alert(err.error || 'Errore eliminazione utente');
             }
         } catch (error) {
             console.error('Errore:', error);
