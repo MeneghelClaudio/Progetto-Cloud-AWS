@@ -3,6 +3,8 @@ TODO:
 - utilizzare auto scaling group
 - rivedere logica superadmin oppure modificare ruolo admin
 - fare tutto il sito mobile-friendly (soprattutto gestione-emergenze)
+- ancora non funziona salvare emergenze sul database RDS
+- su vista operativa centrale la mappa si vede schiacciata (ingrandirla come tutta la pagina...)
 
 -------------------------------------------------------------------------------------------------------------------
 
