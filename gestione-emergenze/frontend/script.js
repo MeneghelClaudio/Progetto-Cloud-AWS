@@ -148,7 +148,7 @@ document.addEventListener('click', (e) => {
 // ── Stats ─────────────────────────────────────────────────────────────────────
 async function loadStats() {
     try {
-        const res = await fetch('/api/emergencies/stats');
+        const res = await fetch('/api/emergencies/stats', { credentials: 'include' });
         const stats = await res.json();
         document.getElementById('countOpen').textContent = stats.open;
         document.getElementById('countInCarico').textContent = stats.in_carico;
@@ -163,7 +163,7 @@ async function loadStats() {
 // ── Liste emergenze ───────────────────────────────────────────────────────────
 async function loadMyEmergencies() {
     try {
-        const res = await fetch('/api/emergencies/my');
+        const res = await fetch('/api/emergencies/my', { credentials: 'include' });
         const list = await res.json();
         document.getElementById('myEmergencies').innerHTML =
             list.length ? list.map(e => emergencyCard(e, false)).join('') :
@@ -173,7 +173,7 @@ async function loadMyEmergencies() {
 
 async function loadAllEmergencies() {
     try {
-        const res = await fetch('/api/emergencies');
+        const res = await fetch('/api/emergencies', { credentials: 'include' });
         const list = await res.json();
         document.getElementById('allEmergencies').innerHTML =
             list.length ? list.map(e => emergencyCard(e, true)).join('') :
@@ -221,6 +221,7 @@ async function createEmergency() {
         const res = await fetch('/api/emergencies', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
         if (res.ok) {
@@ -243,6 +244,7 @@ async function updateStatus(id, status) {
         const res = await fetch(`/api/emergencies/${id}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ status })
         });
         if (res.ok) { loadStats(); loadMyEmergencies(); loadAllEmergencies(); }
