@@ -3,6 +3,7 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 const mysql = require('mysql2/promise');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const http = require('http');
 
 const app = express();
 
@@ -19,8 +20,6 @@ let pool;
 
 async function initDB() {
     pool = mysql.createPool(dbConfig);
-
-    // Crea superadmin di default se non esiste
     const [rows] = await pool.execute('SELECT id FROM users WHERE username = ?', ['admin']);
     if (rows.length === 0) {
         const hash = bcrypt.hashSync('admin', 10);
@@ -43,7 +42,7 @@ app.use(session({
 
 function isAuthenticated(req, res, next) {
     if (req.session.userId) return next();
-    res.redirect('/login/');
+    res.status(401).json({ error: 'Non autenticato' });
 }
 
 function isAdmin(req, res, next) {
@@ -51,12 +50,71 @@ function isAdmin(req, res, next) {
     res.status(403).json({ error: 'Accesso negato' });
 }
 
-function isSuperAdmin(req, res, next) {
-    if (req.session.role === 'superadmin') return next();
-    res.status(403).json({ error: 'Solo il superadmin può eseguire questa operazione' });
+// ── Helper: chiamata HTTP interna verso gestione-emergenze ────────────────────
+// Usato per proxare le API emergenze senza perdere body o headers
+function proxyToGestione(req, res, targetPath) {
+    return new Promise((resolve, reject) => {
+        const body = req.body ? JSON.stringify(req.body) : null;
+        const options = {
+            hostname: 'gestione-emergenze',
+            port: 80,
+            path: targetPath,
+            method: req.method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-Id': String(req.session.userId),
+                'X-Username': req.session.username || '',
+                'X-User-Role': req.session.role || ''
+            }
+        };
+        if (body) options.headers['Content-Length'] = Buffer.byteLength(body);
+
+        const proxyReq = http.request(options, (proxyRes) => {
+            let data = '';
+            proxyRes.on('data', chunk => { data += chunk; });
+            proxyRes.on('end', () => {
+                res.status(proxyRes.statusCode);
+                try {
+                    res.json(JSON.parse(data));
+                } catch {
+                    res.send(data);
+                }
+                resolve();
+            });
+        });
+        proxyReq.on('error', (err) => {
+            console.error('[proxyToGestione] Error:', err.message);
+            res.status(502).json({ error: 'Servizio non raggiungibile' });
+            reject(err);
+        });
+        if (body) proxyReq.write(body);
+        proxyReq.end();
+    });
 }
 
-// ── Proxy microservizi ────────────────────────────────────────────────────────
+// ── Proxy API emergenze (tutte le route sotto /api/emergencies) ───────────────
+
+app.get('/api/emergencies/stats', isAuthenticated, (req, res) => {
+    proxyToGestione(req, res, '/api/emergencies/stats');
+});
+
+app.get('/api/emergencies/my', isAuthenticated, (req, res) => {
+    proxyToGestione(req, res, '/api/emergencies/my');
+});
+
+app.get('/api/emergencies', isAuthenticated, (req, res) => {
+    proxyToGestione(req, res, '/api/emergencies');
+});
+
+app.post('/api/emergencies', isAuthenticated, (req, res) => {
+    proxyToGestione(req, res, '/api/emergencies');
+});
+
+app.put('/api/emergencies/:id/status', isAuthenticated, (req, res) => {
+    proxyToGestione(req, res, `/api/emergencies/${req.params.id}/status`);
+});
+
+// ── Proxy pagine microservizi (HTML/assets) ───────────────────────────────────
 
 app.use('/storia-del-corso', isAuthenticated, createProxyMiddleware({
     target: 'http://storia-del-corso:80',
@@ -68,20 +126,6 @@ app.use('/gestione-emergenze', isAuthenticated, createProxyMiddleware({
     target: 'http://gestione-emergenze:80',
     changeOrigin: true,
     pathRewrite: (path) => path.replace(/^\/gestione-emergenze\/?/, '/') || '/'
-}));
-
-// Proxy API emergenze → gestione-emergenze, con headers autenticazione
-app.use('/api/emergencies', isAuthenticated, createProxyMiddleware({
-    target: 'http://gestione-emergenze:80',
-    changeOrigin: true,
-    // NON riscriviamo il path: /api/emergencies deve arrivare come /api/emergencies
-    on: {
-        proxyReq: (proxyReq, req) => {
-            proxyReq.setHeader('X-User-Id', req.session.userId);
-            proxyReq.setHeader('X-Username', req.session.username);
-            proxyReq.setHeader('X-User-Role', req.session.role);
-        }
-    }
 }));
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -115,7 +159,6 @@ app.post('/api/login', async (req, res) => {
         const [rows] = await pool.execute('SELECT * FROM users WHERE username = ?', [username]);
         if (rows.length === 0 || !bcrypt.compareSync(password, rows[0].password))
             return res.status(401).json({ error: 'Credenziali non valide' });
-
         req.session.userId = rows[0].id;
         req.session.username = rows[0].username;
         req.session.role = rows[0].role;
@@ -156,22 +199,15 @@ app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req, res) => {
     const targetId = parseInt(req.params.id);
     if (targetId === req.session.userId)
         return res.status(400).json({ error: 'Non puoi eliminare il tuo stesso account' });
-
     try {
         const [rows] = await pool.execute('SELECT role FROM users WHERE id = ?', [targetId]);
         if (rows.length === 0)
             return res.status(404).json({ error: 'Utente non trovato' });
-
         const targetRole = rows[0].role;
-
-        // Solo superadmin può eliminare admin o superadmin
         if ((targetRole === 'admin' || targetRole === 'superadmin') && req.session.role !== 'superadmin')
             return res.status(403).json({ error: 'Solo il superadmin può eliminare altri admin' });
-
-        // Nessuno può eliminare il superadmin
         if (targetRole === 'superadmin')
             return res.status(403).json({ error: 'Il superadmin non può essere eliminato' });
-
         await pool.execute('DELETE FROM users WHERE id = ?', [targetId]);
         res.json({ success: true });
     } catch (err) {
@@ -182,28 +218,19 @@ app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req, res) => {
 app.put('/api/users/:id/role', isAuthenticated, isAdmin, async (req, res) => {
     const targetId = parseInt(req.params.id);
     const { role } = req.body;
-
     if (targetId === req.session.userId)
         return res.status(400).json({ error: 'Non puoi modificare il tuo stesso ruolo' });
-
     if (!['user', 'admin'].includes(role))
         return res.status(400).json({ error: 'Ruolo non valido' });
-
     try {
         const [rows] = await pool.execute('SELECT role FROM users WHERE id = ?', [targetId]);
         if (rows.length === 0)
             return res.status(404).json({ error: 'Utente non trovato' });
-
         const targetRole = rows[0].role;
-
-        // Solo superadmin può modificare ruolo di admin/superadmin
         if ((targetRole === 'admin' || targetRole === 'superadmin') && req.session.role !== 'superadmin')
             return res.status(403).json({ error: 'Solo il superadmin può modificare il ruolo di altri admin' });
-
-        // Il ruolo superadmin non si può assegnare tramite API
         if (targetRole === 'superadmin')
             return res.status(403).json({ error: 'Il ruolo superadmin non può essere modificato' });
-
         await pool.execute('UPDATE users SET role = ? WHERE id = ?', [role, targetId]);
         res.json({ success: true });
     } catch (err) {

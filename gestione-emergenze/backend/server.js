@@ -16,6 +16,11 @@ let pool;
 
 async function initDB() {
     pool = mysql.createPool(dbConfig);
+    // Test connection
+    const conn = await pool.getConnection();
+    await conn.ping();
+    conn.release();
+    console.log('DB connection OK');
 }
 
 app.use(express.json());
@@ -24,6 +29,7 @@ function isAuthenticated(req, res, next) {
     const userId = req.headers['x-user-id'];
     const username = req.headers['x-username'];
     const role = req.headers['x-user-role'];
+    console.log(`[auth] ${req.method} ${req.path} | x-user-id=${userId}`);
     if (userId) {
         req.userId = parseInt(userId);
         req.username = username;
