@@ -1,9 +1,9 @@
 TODO:
 - sistemare posizione first e last node in storia-del-corso
 - utilizzare auto scaling group
-- rivedere logica superadmin oppure modificare ruolo admin (?)
+- cambiare nome a ruolo superadmin? (tipo defaultadmin o root...)
 - fare tutto il sito mobile-friendly (soprattutto gestione-emergenze)
-- ancora non funziona salvare emergenze sul database RDS (controllare errori con F12...)
+- adattare tutto il contenuto sulla finestra da desktop (evitare di scrollare per la mappa ecc)
 
 -------------------------------------------------------------------------------------------------------------------
 
