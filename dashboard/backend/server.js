@@ -20,14 +20,14 @@ let pool;
 
 async function initDB() {
     pool = mysql.createPool(dbConfig);
-    const [rows] = await pool.execute('SELECT id FROM users WHERE username = ?', ['admin']);
+    const [rows] = await pool.execute('SELECT id FROM users WHERE username = ?', ['root']);
     if (rows.length === 0) {
-        const hash = bcrypt.hashSync('admin', 10);
+        const hash = bcrypt.hashSync('Vmware1!', 10);
         await pool.execute(
             'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
-            ['admin', hash, 'superadmin']
+            ['root', hash, 'root']
         );
-        console.log('Default superadmin created: admin / admin');
+        console.log('Default root created: root / Vmware1!');
     }
 }
 
@@ -46,7 +46,7 @@ function isAuthenticated(req, res, next) {
 }
 
 function isAdmin(req, res, next) {
-    if (req.session.role === 'admin' || req.session.role === 'superadmin') return next();
+    if (req.session.role === 'admin' || req.session.role === 'root') return next();
     res.status(403).json({ error: 'Accesso negato' });
 }
 
@@ -204,10 +204,10 @@ app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req, res) => {
         if (rows.length === 0)
             return res.status(404).json({ error: 'Utente non trovato' });
         const targetRole = rows[0].role;
-        if ((targetRole === 'admin' || targetRole === 'superadmin') && req.session.role !== 'superadmin')
-            return res.status(403).json({ error: 'Solo il superadmin può eliminare altri admin' });
-        if (targetRole === 'superadmin')
-            return res.status(403).json({ error: 'Il superadmin non può essere eliminato' });
+        if ((targetRole === 'admin' || targetRole === 'root') && req.session.role !== 'root')
+            return res.status(403).json({ error: 'Solo il root può eliminare altri admin' });
+        if (targetRole === 'root')
+            return res.status(403).json({ error: 'Il root non può essere eliminato' });
         await pool.execute('DELETE FROM users WHERE id = ?', [targetId]);
         res.json({ success: true });
     } catch (err) {
@@ -227,10 +227,10 @@ app.put('/api/users/:id/role', isAuthenticated, isAdmin, async (req, res) => {
         if (rows.length === 0)
             return res.status(404).json({ error: 'Utente non trovato' });
         const targetRole = rows[0].role;
-        if ((targetRole === 'admin' || targetRole === 'superadmin') && req.session.role !== 'superadmin')
-            return res.status(403).json({ error: 'Solo il superadmin può modificare il ruolo di altri admin' });
-        if (targetRole === 'superadmin')
-            return res.status(403).json({ error: 'Il ruolo superadmin non può essere modificato' });
+        if ((targetRole === 'admin' || targetRole === 'root') && req.session.role !== 'root')
+            return res.status(403).json({ error: 'Solo il root può modificare il ruolo di altri admin' });
+        if (targetRole === 'root')
+            return res.status(403).json({ error: 'Il ruolo root non può essere modificato' });
         await pool.execute('UPDATE users SET role = ? WHERE id = ?', [role, targetId]);
         res.json({ success: true });
     } catch (err) {

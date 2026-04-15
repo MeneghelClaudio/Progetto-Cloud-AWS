@@ -1,9 +1,9 @@
 TODO:
 - sistemare posizione first e last node in storia-del-corso
 - utilizzare auto scaling group
-- cambiare nome a ruolo superadmin? (tipo defaultadmin o root...)
 - fare tutto il sito mobile-friendly (soprattutto gestione-emergenze)
 - adattare tutto il contenuto sulla finestra da desktop (evitare di scrollare per la mappa ecc)
+- gestire come svuotare il db senza farlo ad ogni build di docker compose
 
 -------------------------------------------------------------------------------------------------------------------
 
@@ -69,3 +69,56 @@ Containerizzare l’app con Docker e Docker Compose.
 Sfruttare l’auto scaling group per creare nuove istanze se l’applicazione va sotto stress
 (simulazione di carico). Predisporre una AMI per non dover eseguire alcuna procedura
 manuale sulle VM istanziate dal ASG.
+
+-------------------------------------------------------------------------------------------------------------------
+
+COMMIT FATTI:
+storia del corso + gitignore
+dashboard, modifiche storia del corso, docker compose
+modifiche file data.json
+test fix nginx frontend
+test fix path troncato storia del corso
+fix lettura file data.json
+test fix path storia-del-corso
+test 2 fix path storia-del-corso
+fix visualizzazione info data.json
+fix altezza linea e nodi in storia-del-corso
+test fix altezza nodi in storia-del-corso
+test fix timeline e nodi storia-del-corso
+test 2 fix timeline e nodi storia-del-corso
+rimosso gitignore, aggiunte chiavi ssh, aggiunto todo
+predisposizione utilizzo RDS, cambiata keypair, no TODO ma README (todo, template relazione, traccia)
+implementato gestione-emergenze
+repository da privata a pubblica, gitignore per chiavi ssh
+update readme
+fix+update readme
+fix docker-compose (path data.json storia-del-corso)
+test fix login
+fix dashboard login css, test fix login admin
+test fix css
+cambio struttura file progetto, test fix css gestione-emergenze
+test fix redirect index -> login
+fix paths, aggiunto button back in storia-del-corso
+test fix loop nginx (login)
+test fix completo
+test fix nginx dashboard
+test 2 fix completo
+test 3 fix completo
+fix dashboard css + pannello gestione utenti, bottone back in storia-del-corso
+fix messaggio registrati
+test fix messaggio registrati
+test 2 fix messaggio registrati
+test 3 fix messaggio registrati
+fix messaggio registrati
+allineamento git, update readme
+update readme
+test fix visualizzazione mappa gestione-emergenze
+fix gestione-emergenze visualizzazione mappa e test posizione
+update readme (problema posizione in http), test fix connessione db per gestione-emergenze
+aggiunta superadmin (admin), modifiche db gestione-emergenze, test fix connessione db gestione-emergenze, update readme
+update readme (fix da fare)
+test fix db per gestione-emergenze + mappa vista centrale operativa
+update readme (ancora problemi db...)
+test 2 fix db per gestione-emergenze
+update readme (minor fixes)
+rinominato admin e superadmin in root, update readme (reset db)
