@@ -7,13 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
+    <div class="app">
+
+        <!-- HEADER -->
+        <header class="app-header">
             <h1>Gestione Emergenze</h1>
-            <a href="/dashboard/" class="btn-back">← Torna alla Dashboard</a>
+            <a href="/dashboard/" class="btn-back">← Dashboard</a>
         </header>
 
-        <div class="stats">
+        <!-- STATS -->
+        <div class="stats-bar">
             <div class="stat-card open">
                 <h3 id="countOpen">0</h3>
                 <div class="label">Aperte</div>
@@ -32,76 +35,95 @@
             </div>
         </div>
 
+        <!-- VIEW TOGGLE -->
         <div class="view-toggle">
             <button class="btn-view active" onclick="switchView('operator')">Vista Operatore</button>
-            <button class="btn-view" onclick="switchView('central')">Vista Centrale Operativa</button>
+            <button class="btn-view" onclick="switchView('central')">Vista Centrale</button>
         </div>
 
         <!-- VISTA OPERATORE -->
-        <div id="operatorView" class="content-area">
-            <div class="panel">
-                <h2>Nuova Segnalazione</h2>
-                <form id="emergencyForm">
-                    <div class="form-group">
-                        <label>Tipologia Emergenza</label>
-                        <select id="emergencyType" required>
-                            <option value="incidente">Incidente</option>
-                            <option value="terremoto">Terremoto</option>
-                            <option value="incendio">Incendio</option>
-                            <option value="alluvione">Alluvione</option>
-                            <option value="altro">Altro</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Descrizione</label>
-                        <textarea id="emergencyDesc" required placeholder="Descrivi l'emergenza..."></textarea>
-                    </div>
+        <div id="operatorView" class="view-area">
+            <div class="op-grid">
+                <div class="panel">
+                    <h2>Nuova Segnalazione</h2>
+                    <form id="emergencyForm" class="op-form">
 
-                    <!-- Sezione posizione -->
-                    <div class="form-group">
-                        <label>Posizione <span class="label-hint">(opzionale)</span></label>
-                        <div class="geo-toolbar">
-                            <button type="button" class="btn-geo" id="geoBtn" onclick="useMyLocation()">📍 Usa GPS</button>
-                            <span class="geo-sep">oppure cerca un luogo</span>
+                        <div class="form-group">
+                            <label>Tipologia Emergenza</label>
+                            <select id="emergencyType" required>
+                                <option value="incidente">Incidente</option>
+                                <option value="terremoto">Terremoto</option>
+                                <option value="incendio">Incendio</option>
+                                <option value="alluvione">Alluvione</option>
+                                <option value="altro">Altro</option>
+                            </select>
                         </div>
-                        <div class="search-row">
-                            <input type="text" id="addressSearch" placeholder="Es. Via Roma, Milano" autocomplete="off">
-                            <button type="button" class="btn-search" onclick="searchAddress()">🔍</button>
-                        </div>
-                        <div id="searchResults" class="search-results" style="display:none;"></div>
-                        <div id="geoStatus" class="geo-status"></div>
-                        <div class="coord-row">
-                            <input type="text" id="emergencyLat" placeholder="Latitudine" readonly>
-                            <input type="text" id="emergencyLng" placeholder="Longitudine" readonly>
-                            <button type="button" class="btn-clear-geo" onclick="clearLocation()" title="Rimuovi posizione">✕</button>
-                        </div>
-                        <!-- Mappa di selezione -->
-                        <div id="pickMap" class="pick-map"></div>
-                        <p class="pick-hint">Clicca sulla mappa per posizionare il marker</p>
-                    </div>
 
-                    <button type="submit" class="btn-submit">Invia Segnalazione</button>
-                </form>
-            </div>
-            <div class="panel">
-                <h2>Le Mie Segnalazioni</h2>
-                <div class="emergencies-list" id="myEmergencies"></div>
+                        <div class="form-group">
+                            <label>Posizione <span class="label-hint">(opzionale)</span></label>
+                            <div class="pos-row">
+                                <input type="text" id="emergencyLat" placeholder="Latitudine" readonly>
+                                <input type="text" id="emergencyLng" placeholder="Longitudine" readonly>
+                                <button type="button" class="btn-geo" id="geoBtn" onclick="useMyLocation()" title="GPS">📍</button>
+                                <button type="button" class="btn-map-pick" onclick="openMapModal()" title="Seleziona su mappa">🗺️</button>
+                                <button type="button" class="btn-clear-geo" onclick="clearLocation()" title="Rimuovi">✕</button>
+                            </div>
+                            <div id="geoStatus" class="geo-status"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descrizione</label>
+                            <textarea id="emergencyDesc" required placeholder="Descrivi l'emergenza..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit">Invia Segnalazione</button>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <h2>Le Mie Segnalazioni</h2>
+                    <div class="emergencies-list" id="myEmergencies"></div>
+                </div>
             </div>
         </div>
 
         <!-- VISTA CENTRALE OPERATIVA -->
-        <div id="centralView" class="content-area" style="display: none;">
-            <div class="panel">
-                <h2>Segnalazioni Attive <span class="live-badge">● LIVE</span></h2>
-                <div class="emergencies-list" id="allEmergencies"></div>
-            </div>
-            <div class="panel map-panel">
-                <h2>Mappa Emergenze</h2>
-                <div id="map"></div>
-                <div class="map-legend">
-                    <span class="legend-dot red"></span> Aperta
-                    <span class="legend-dot blue"></span> In Carico
+        <div id="centralView" class="view-area" style="display:none;">
+            <div class="central-grid">
+                <div class="panel">
+                    <h2>Segnalazioni Attive <span class="live-badge">● LIVE</span></h2>
+                    <div class="emergencies-list" id="allEmergencies"></div>
                 </div>
+                <div class="panel map-panel">
+                    <h2>Mappa Emergenze</h2>
+                    <div id="map"></div>
+                    <div class="map-legend">
+                        <span class="legend-dot red"></span> Aperta
+                        <span class="legend-dot blue"></span> In Carico
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODALE MAPPA SELEZIONE -->
+    <div id="mapModal" class="modal-overlay" style="display:none;" onclick="closeMapModalIfBg(event)">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>Seleziona posizione</span>
+                <button class="modal-close" onclick="closeMapModal()">✕</button>
+            </div>
+            <div class="modal-search">
+                <input type="text" id="addressSearch" placeholder="Cerca un indirizzo..." autocomplete="off">
+                <button type="button" class="btn-search" onclick="searchAddress()">🔍</button>
+            </div>
+            <div id="searchResults" class="search-results" style="display:none;"></div>
+            <div id="pickMap" class="pick-map-modal"></div>
+            <p class="pick-hint">Clicca sulla mappa o cerca un indirizzo. Trascina il marker per regolare.</p>
+            <div class="modal-footer">
+                <span id="modalCoords" class="modal-coords">Nessuna posizione selezionata</span>
+                <button class="btn-confirm-pos" onclick="confirmMapModal()">✓ Conferma posizione</button>
             </div>
         </div>
     </div>
