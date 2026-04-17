@@ -40,7 +40,7 @@ header {
 }
 
 h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 800;
     background: linear-gradient(to right, var(--accent-cyan), var(--accent-blue));
     background-clip: text;
@@ -91,7 +91,7 @@ h1 {
     height: 4px;
     background: var(--card-border);
     border-radius: 4px;
-    top: 65%;
+    top: 75%;
     transform: translateY(-50%);
     z-index: 1;
 }
@@ -103,7 +103,7 @@ h1 {
     position: absolute;
     left: 0;
     right: 0;
-    top: 65%;
+    top: 75%;
     transform: translateY(-50%);
     z-index: 2;
 }
@@ -241,130 +241,3 @@ h1 {
 .tags-container { display: flex; flex-wrap: wrap; gap: 4px; }
 .tag { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; }
 .empty-text { font-size: 0.65rem; color: var(--node-future); font-style: italic; }
-
-/* ══════════════════════════════════════════════════════════
-   MOBILE: scroll orizzontale, layout verticale della timeline
-   ══════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-    body { overflow: hidden; }
-
-    .subtitle { display: none; }
-
-    h1 { font-size: 1.3rem; }
-
-    header { padding: 1rem 1rem 0.5rem; }
-
-    .btn-back {
-        position: static;
-        display: inline-block;
-        margin-top: 0.5rem;
-        font-size: 0.8rem;
-        padding: 0.3rem 0.7rem;
-    }
-
-    /* La wrapper diventa uno scroll orizzontale */
-    .timeline-wrapper {
-        align-items: stretch;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: var(--card-border) transparent;
-        padding: 0 1rem;
-        /* La linea orizzontale rimane a metà verticale */
-        justify-content: flex-start;
-    }
-
-    .timeline-wrapper::-webkit-scrollbar { height: 4px; }
-    .timeline-wrapper::-webkit-scrollbar-track { background: transparent; }
-    .timeline-wrapper::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 2px; }
-
-    /* La linea si estende per tutta la larghezza del contenuto */
-    .timeline-line {
-        left: 0;
-        right: 0;
-        width: auto;
-    }
-
-    /* I nodi diventano una riga scrollabile */
-    .timeline-nodes {
-        position: relative;
-        top: auto;
-        left: auto;
-        right: auto;
-        transform: none;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 0;
-        width: max-content;
-        min-width: 100%;
-        padding: 80px 1.5rem 60px;  /* spazio sopra per card, sotto per label */
-        margin: auto 0;
-    }
-
-    /* La linea mobile è relativa ai nodi */
-    .timeline-line {
-        top: 50%;
-    }
-
-    .node-container {
-        flex-shrink: 0;
-        width: 80px;
-        height: auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-    }
-
-    .node-container:first-child { margin-left: 0; }
-    .node-container:last-child  { margin-right: 0; }
-
-    /* Label sotto il dot, visibile sempre */
-    .month-label {
-        position: static;
-        transform: none;
-        margin-top: 8px;
-        font-size: 0.7rem;
-        text-align: center;
-        white-space: nowrap;
-        color: var(--text-muted);
-    }
-
-    .node-container.status-current .month-label { color: var(--accent-cyan); }
-
-    /* Su mobile il tooltip si apre sul tap (hover via JS o :active) */
-    .info-card {
-        width: 220px;
-        bottom: calc(100% + 14px);
-        left: 50%;
-        transform: translateX(-50%) translateY(4px);
-        font-size: 0.85rem;
-    }
-
-    .node-container:hover .info-card,
-    .node-container:focus .info-card {
-        opacity: 1;
-        visibility: visible;
-        transform: translateX(-50%) translateY(0);
-    }
-
-    /* First/last su mobile: stessa logica desktop ma con spazio ridotto */
-    .node-container.first-node .info-card {
-        left: -22px;
-        transform: translateX(0) translateY(4px);
-    }
-    .node-container.first-node:hover .info-card { transform: translateX(0) translateY(0); }
-    .node-container.first-node .info-card::after { left: 32px; transform: translateX(-50%) rotate(45deg); }
-
-    .node-container.last-node .info-card {
-        left: auto;
-        right: -22px;
-        transform: translateX(0) translateY(4px);
-    }
-    .node-container.last-node:hover .info-card { transform: translateX(0) translateY(0); }
-    .node-container.last-node .info-card::after { left: auto; right: 32px; transform: translateX(50%) rotate(45deg); }
-}

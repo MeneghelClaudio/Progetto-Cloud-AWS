@@ -1,8 +1,6 @@
 TODO:
-- utilizzare auto scaling group
-- sistemare posizione first e last node in storia-del-corso (punte corrette, corpo info non allineato correttamente)
-- (da verificare) fare tutto il sito mobile-friendly (soprattutto gestione-emergenze)
-- adattare tutto il contenuto sulla finestra da desktop (evitare di scrollare per la mappa ecc) -> sistemare layout info 4 slot, lasciare margine e elementi di input meno stretti (tipo coordinate sulla stessa riga, tipo sulla stessa riga, descrizione ecc)
+- utilizzare auto scaling group ASG (AMI, launch template, TG, ALB)
+- pubblicare immagini docker su ECR (modificare docker compose?)
 
 -------------------------------------------------------------------------------------------------------------------
 
