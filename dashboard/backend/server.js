@@ -27,7 +27,7 @@ async function initDB() {
             'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
             ['root', hash, 'root']
         );
-        console.log('Default root created: root / Vmware1!');
+        console.log('Default root user created: root / Vmware1!');
     }
 }
 
@@ -205,9 +205,9 @@ app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req, res) => {
             return res.status(404).json({ error: 'Utente non trovato' });
         const targetRole = rows[0].role;
         if ((targetRole === 'admin' || targetRole === 'root') && req.session.role !== 'root')
-            return res.status(403).json({ error: 'Solo il root può eliminare altri admin' });
+            return res.status(403).json({ error: 'Solo il superadmin può eliminare altri admin' });
         if (targetRole === 'root')
-            return res.status(403).json({ error: 'Il root non può essere eliminato' });
+            return res.status(403).json({ error: 'Il superadmin non può essere eliminato' });
         await pool.execute('DELETE FROM users WHERE id = ?', [targetId]);
         res.json({ success: true });
     } catch (err) {
@@ -228,9 +228,9 @@ app.put('/api/users/:id/role', isAuthenticated, isAdmin, async (req, res) => {
             return res.status(404).json({ error: 'Utente non trovato' });
         const targetRole = rows[0].role;
         if ((targetRole === 'admin' || targetRole === 'root') && req.session.role !== 'root')
-            return res.status(403).json({ error: 'Solo il root può modificare il ruolo di altri admin' });
+            return res.status(403).json({ error: 'Solo il superadmin può modificare il ruolo di altri admin' });
         if (targetRole === 'root')
-            return res.status(403).json({ error: 'Il ruolo root non può essere modificato' });
+            return res.status(403).json({ error: 'Il ruolo superadmin non può essere modificato' });
         await pool.execute('UPDATE users SET role = ? WHERE id = ?', [role, targetId]);
         res.json({ success: true });
     } catch (err) {

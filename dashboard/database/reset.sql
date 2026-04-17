@@ -1,11 +1,17 @@
 USE dashboard_db;
 
 -- ============================================================
--- init.sql — eseguito ad ogni avvio dell'istanza EC2 / ASG.
--- Usa IF NOT EXISTS: idempotente, non distrugge dati esistenti.
+-- reset.sql — DISTRUGGE tutti i dati e ricrea da zero.
+-- Eseguire MANUALMENTE solo quando serve svuotare il DB.
+-- Comando: docker compose run --rm db-reset
 -- ============================================================
 
-CREATE TABLE IF NOT EXISTS users (
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS emergency_requests;
+DROP TABLE IF EXISTS users;
+SET FOREIGN_KEY_CHECKS = 1;
+
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -13,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS emergency_requests (
+CREATE TABLE emergency_requests (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     type ENUM('incidente', 'terremoto', 'incendio', 'alluvione', 'altro') NOT NULL,
@@ -26,7 +32,8 @@ CREATE TABLE IF NOT EXISTS emergency_requests (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Inserisce utente root solo se non esiste (INSERT IGNORE).
--- Password: Vmware1! (bcrypt, rounds=10)
-INSERT IGNORE INTO users (username, password, role)
+-- Ricrea utente root. Password: Vmware1! (bcrypt, rounds=10)
+INSERT INTO users (username, password, role)
 VALUES ('root', '$2b$10$EbIbB8Ol9HvgP.6/YKsplONYa5FjLVASwMjTv/.C6fYJCERQTfun2', 'root');
+
+SELECT 'Reset completato. Utente root ricreato.' AS status;

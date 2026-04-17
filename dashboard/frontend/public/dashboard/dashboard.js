@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             const response = await fetch('/api/users');
             const users = await response.json();
-            const isRoot = currentRole === 'root';
+            const isSuperAdmin = currentRole === 'root';
 
             const usersList = document.getElementById('usersList');
             usersList.innerHTML =
@@ -56,9 +56,16 @@ document.addEventListener('DOMContentLoaded', async function() {
                 '<thead><tr><th>Username</th><th>Ruolo</th><th>Azioni</th></tr></thead><tbody>' +
                 users.map(user => {
                     const isSelf = user.username === usernameSpan.textContent;
-                    const isTargetRoot = user.role === 'root';
-                    const selectDisabled = isSelf || isTargetRoot || (user.role === 'admin' && !isRoot);
-                    const canDelete = !isSelf && !isTargetRoot && (user.role !== 'admin' || isRoot);
+                    const isTargetSuperAdmin = user.role === 'root';
+                    // Il select è disabilitato se:
+                    // - è se stesso
+                    // - è superadmin
+                    // - è un admin e chi guarda non è superadmin
+                    const selectDisabled = isSelf || isTargetSuperAdmin || (user.role === 'admin' && !isSuperAdmin);
+                    // Il pulsante elimina è visibile se:
+                    // - non è se stesso, non è superadmin
+                    // - se è admin, solo il superadmin può eliminarlo
+                    const canDelete = !isSelf && !isTargetSuperAdmin && (user.role !== 'admin' || isSuperAdmin);
                     const roleLabel = { user: 'User', admin: 'Admin', root: 'Root' }[user.role] || user.role;
 
                     return `<tr>

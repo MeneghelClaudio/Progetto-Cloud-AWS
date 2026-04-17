@@ -3,7 +3,7 @@ TODO:
 - utilizzare auto scaling group
 - fare tutto il sito mobile-friendly (soprattutto gestione-emergenze)
 - adattare tutto il contenuto sulla finestra da desktop (evitare di scrollare per la mappa ecc)
-- gestire come svuotare il db senza farlo ad ogni build di docker compose
+- gestire come svuotare il db senza farlo ad ogni build di docker compose (file reset.sql, eventuale container da buttare su reset-db, tenere init-db e forse mettere)
 
 -------------------------------------------------------------------------------------------------------------------
 

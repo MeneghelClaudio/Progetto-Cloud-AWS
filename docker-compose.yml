@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+
   frontend:
     build:
       context: ./dashboard/frontend
@@ -24,13 +25,15 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-meneghel_password}
       DB_NAME: dashboard_db
       DB_PORT: 3306
-    depends_on: []
     networks:
       - dashboard-network
 
+  # Eseguito ad ogni avvio: crea tabelle se non esistono, crea utente root se mancante.
+  # Sicuro per ASG: IF NOT EXISTS garantisce idempotenza.
   db-init:
     image: mysql:8.4
     container_name: db-init
+    restart: "no"
     environment:
       DB_HOST: ${DB_HOST:-syam-meneghel-progetto-cloud-aws-db.c9nj1x2p6gk5.eu-west-1.rds.amazonaws.com}
       DB_USER: syam_meneghel
@@ -39,7 +42,26 @@ services:
     volumes:
       - ./dashboard/database/init.sql:/init.sql
     command: >
-      sh -c "mysql -h $$DB_HOST -u $$DB_USER -p$$DB_PASSWORD $$DB_NAME < /init.sql"
+      sh -c "mysql -h $$DB_HOST -u $$DB_USER -p$$DB_PASSWORD $$DB_NAME < /init.sql && echo 'db-init OK'"
+    networks:
+      - dashboard-network
+
+  # NON parte con docker compose up.
+  # Per svuotare il DB: docker compose run --rm db-reset
+  db-reset:
+    image: mysql:8.4
+    restart: "no"
+    profiles:
+      - reset
+    environment:
+      DB_HOST: ${DB_HOST:-syam-meneghel-progetto-cloud-aws-db.c9nj1x2p6gk5.eu-west-1.rds.amazonaws.com}
+      DB_USER: syam_meneghel
+      DB_PASSWORD: ${DB_PASSWORD:-meneghel_password}
+      DB_NAME: dashboard_db
+    volumes:
+      - ./dashboard/database/reset.sql:/reset.sql
+    command: >
+      sh -c "mysql -h $$DB_HOST -u $$DB_USER -p$$DB_PASSWORD $$DB_NAME < /reset.sql"
     networks:
       - dashboard-network
 
