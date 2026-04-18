@@ -138,3 +138,4 @@ manuale sulle VM istanziate dal ASG.
 - test fix layout storia-del-corso (mobile) e gestione-emergenze (desktop)
 - rimosso qualunque layout mobile, test fix gestione-emergenze x desktop
 - test 2 fix gestione-emergenze x desktop
+- test 3 fix gestione-emergenze x desktop
