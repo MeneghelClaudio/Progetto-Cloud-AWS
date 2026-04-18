@@ -5,14 +5,20 @@ TODO:
 -------------------------------------------------------------------------------------------------------------------
 
 TEMPLATE RELAZIONE:
-- struttura progetto: 5 container (frontend, backend, init-db che inizializza RDS, storia-del-corso, gestione-emergenze)
+- struttura progetto: 6 container (frontend, backend, db-init, db-reset, storia-del-corso, gestione-emergenze)
 - servizi AWS:
-    - EC2 (syam-meneghel-progetto-cloud-aws-ec2 -> istanza con docker-compose)
+    - EC2 (syam-meneghel-progetto-cloud-aws-ec2 -> istanza con docker-compose originale)
     - RDS (syam-meneghel-progetto-cloud-aws-db -> database mysql con utenti+dati -> usr: syam_meneghel, pwd: meneghel_password, db: dashboard_db, endpoint: syam-meneghel-progetto-cloud-aws-db.c9nj1x2p6gk5.eu-west-1.rds.amazonaws.com)
     - security groups: EC2 (syam-meneghel-progetto-cloud-aws-sg-ec2 -> in-out 22 80, out all-tcp)
-        + ALTERNATIVA: security group RDS (syam-meneghel-progetto-cloud-aws-sg-rds -> in 3306 con security group EC2) con aggiunta di peering connection tra ec2 e rds!
+        + ALTERNATIVA: security group RDS (syam-meneghel-progetto-cloud-aws-sg-rds -> in 3306 con security group EC2) con aggiunta di peering connection tra ec2 e rds! (documentazione)
     - keypair (syam-meneghel-progetto-cloud-aws-keypair.pem)
-- ottenere posizione del dispositivo x creare segnalazione: NON FUNZIONA su http, funziona solo su https o localhost, quindi servirebbe un dominio o altre soluzioni...
+    - AMI
+    - launch template
+    - target group
+    - ALB
+    - ASG
+    - ECR
+- ottenere posizione del dispositivo x creare segnalazione: NON FUNZIONA su http, funziona solo su https o localhost, quindi servirebbe un dominio o altre soluzioni (documentazione)
 
 -------------------------------------------------------------------------------------------------------------------
 
@@ -125,3 +131,4 @@ manuale sulle VM istanziate dal ASG.
 - fix testo in gestione-emergenze (vista gestione operativa)
 - fix warning style.css in gestione-emergenze
 - update readme (lista commit)
+- cambiata struttura cartelle (db-init e db-reset separati), update docker compose, update readme (AWS)

@@ -31,7 +31,9 @@ services:
   # Eseguito ad ogni avvio: crea tabelle se non esistono, crea utente root se mancante.
   # Sicuro per ASG: IF NOT EXISTS garantisce idempotenza.
   db-init:
-    image: mysql:8.4
+    build:
+      context: ./dashboard/database/db-init
+      dockerfile: Dockerfile
     container_name: db-init
     restart: "no"
     environment:
@@ -39,17 +41,16 @@ services:
       DB_USER: syam_meneghel
       DB_PASSWORD: ${DB_PASSWORD:-meneghel_password}
       DB_NAME: dashboard_db
-    volumes:
-      - ./dashboard/database/init.sql:/init.sql
-    command: >
-      sh -c "mysql -h $$DB_HOST -u $$DB_USER -p$$DB_PASSWORD $$DB_NAME < /init.sql && echo 'db-init OK'"
     networks:
       - dashboard-network
 
-  # NON parte con docker compose up.
+  # NON parte con docker compose up (profile: reset).
   # Per svuotare il DB: docker compose run --rm db-reset
   db-reset:
-    image: mysql:8.4
+    build:
+      context: ./dashboard/database/db-reset
+      dockerfile: Dockerfile
+    container_name: db-reset
     restart: "no"
     profiles:
       - reset
@@ -58,10 +59,6 @@ services:
       DB_USER: syam_meneghel
       DB_PASSWORD: ${DB_PASSWORD:-meneghel_password}
       DB_NAME: dashboard_db
-    volumes:
-      - ./dashboard/database/reset.sql:/reset.sql
-    command: >
-      sh -c "mysql -h $$DB_HOST -u $$DB_USER -p$$DB_PASSWORD $$DB_NAME < /reset.sql"
     networks:
       - dashboard-network
 
