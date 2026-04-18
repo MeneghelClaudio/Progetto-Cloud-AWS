@@ -137,3 +137,4 @@ manuale sulle VM istanziate dal ASG.
 - fix layout gestione-emergenze, tolta compilazione automatica informazioni luogo per posizione (https/localhost), rimesso layout mobile e fix linea storia-del-corso (mobile)
 - test fix layout storia-del-corso (mobile) e gestione-emergenze (desktop)
 - rimosso qualunque layout mobile, test fix gestione-emergenze x desktop
+- test 2 fix gestione-emergenze x desktop
