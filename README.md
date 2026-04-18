@@ -139,3 +139,4 @@ manuale sulle VM istanziate dal ASG.
 - rimosso qualunque layout mobile, test fix gestione-emergenze x desktop
 - test 2 fix gestione-emergenze x desktop
 - test 3 fix gestione-emergenze x desktop
+- versione finale (fix gestione-emergenze x desktop)
