@@ -67,34 +67,33 @@ app.get('/api/emergencies/my', isAuthenticated, async (req, res) => {
 });
 
 app.post('/api/emergencies', isAuthenticated, async (req, res) => {
-    const { type, description, latitude, longitude } = req.body;
+    const { type, description, latitude, longitude, location_name } = req.body;
 
     if (!type || !description) {
         return res.status(400).json({ error: 'Tipologia e descrizione richiesti' });
     }
 
-    // Normalizza: stringa vuota o undefined → null
-    const lat = (latitude !== undefined && latitude !== null && latitude !== '')
-        ? parseFloat(latitude) : null;
-    const lng = (longitude !== undefined && longitude !== null && longitude !== '')
-        ? parseFloat(longitude) : null;
+    // Lat/lng obbligatori
+    if (!latitude || !longitude) {
+        return res.status(400).json({ error: 'La posizione (coordinate) è obbligatoria' });
+    }
 
-    // Validazione range
-    if (lat !== null && (isNaN(lat) || lat < -90 || lat > 90)) {
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
+
+    if (isNaN(lat) || lat < -90 || lat > 90) {
         return res.status(400).json({ error: 'Latitudine non valida (range: -90 / +90)' });
     }
-    if (lng !== null && (isNaN(lng) || lng < -180 || lng > 180)) {
+    if (isNaN(lng) || lng < -180 || lng > 180) {
         return res.status(400).json({ error: 'Longitudine non valida (range: -180 / +180)' });
     }
-    // Devono essere entrambe presenti o entrambe assenti
-    if ((lat === null) !== (lng === null)) {
-        return res.status(400).json({ error: 'Latitudine e longitudine devono essere entrambe presenti o entrambe assenti' });
-    }
+
+    const locName = (location_name && location_name.trim()) ? location_name.trim() : null;
 
     try {
         await pool.execute(
-            'INSERT INTO emergency_requests (user_id, type, description, latitude, longitude) VALUES (?, ?, ?, ?, ?)',
-            [req.userId, type, description, lat, lng]
+            'INSERT INTO emergency_requests (user_id, type, description, latitude, longitude, location_name) VALUES (?, ?, ?, ?, ?, ?)',
+            [req.userId, type, description, lat, lng, locName]
         );
         res.json({ success: true });
     } catch (err) {

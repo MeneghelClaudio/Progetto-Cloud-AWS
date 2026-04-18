@@ -26,6 +26,21 @@ CREATE TABLE IF NOT EXISTS emergency_requests (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Aggiunge location_name se la colonna non esiste ancora (idempotente)
+SET @col_exists = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'emergency_requests'
+      AND COLUMN_NAME = 'location_name'
+);
+SET @sql = IF(@col_exists = 0,
+    'ALTER TABLE emergency_requests ADD COLUMN location_name VARCHAR(500) NULL AFTER longitude',
+    'SELECT 1'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 -- Inserisce utente root solo se non esiste (INSERT IGNORE).
 -- Password: Vmware1! (bcrypt, rounds=10)
 INSERT IGNORE INTO users (username, password, role)

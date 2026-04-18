@@ -26,6 +26,7 @@ CREATE TABLE emergency_requests (
     description TEXT NOT NULL,
     latitude DECIMAL(10, 8),
     longitude DECIMAL(11, 8),
+    location_name VARCHAR(500),
     status ENUM('aperta', 'in_carico', 'annullata', 'chiusa') DEFAULT 'aperta',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestione Emergenze</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div class="app">
 
@@ -40,7 +38,7 @@
         <!-- VIEW TOGGLE -->
         <div class="view-toggle">
             <button class="btn-view active" onclick="switchView('operator')">Vista Operatore</button>
-            <button class="btn-view" onclick="switchView('central')">Vista Centrale Operativa</button>
+            <button class="btn-view" onclick="switchView('central')">Vista Centrale</button>
         </div>
 
         <!-- VISTA OPERATORE -->
@@ -62,18 +60,21 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Posizione <span class="label-hint">(opzionale)</span></label>
+                            <label>Posizione</label>
                             <div class="pos-row">
                                 <input type="text" id="emergencyLat" placeholder="Latitudine" readonly>
                                 <input type="text" id="emergencyLng" placeholder="Longitudine" readonly>
-                                <button type="button" class="btn-geo" id="geoBtn" onclick="useMyLocation()"
-                                    title="GPS">📍</button>
-                                <button type="button" class="btn-map-pick" onclick="openMapModal()"
-                                    title="Seleziona su mappa">🗺️</button>
-                                <button type="button" class="btn-clear-geo" onclick="clearLocation()"
-                                    title="Rimuovi">✕</button>
+                                <button type="button" class="btn-geo" id="geoBtn" onclick="useMyLocation()" title="GPS">📍</button>
+                                <button type="button" class="btn-map-pick" onclick="openMapModal()" title="Seleziona su mappa">🗺️</button>
+                                <button type="button" class="btn-clear-geo" onclick="clearLocation()" title="Rimuovi">✕</button>
                             </div>
                             <div id="geoStatus" class="geo-status"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Informazioni luogo</label>
+                            <input type="text" id="locationName" placeholder="Es. Incrocio Via Roma / Via Garibaldi, Milano" autocomplete="off">
+                            <div id="locationNameHint" class="geo-status"></div>
                         </div>
 
                         <div class="form-group">
@@ -136,5 +137,4 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
-
 </html>

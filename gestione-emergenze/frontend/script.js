@@ -98,9 +98,40 @@ function clearLocation() {
     document.getElementById('emergencyLng').value = '';
     document.getElementById('geoStatus').textContent = '';
     document.getElementById('geoStatus').className = 'geo-status';
+    document.getElementById('locationName').value = '';
+    document.getElementById('locationNameHint').textContent = '';
+    document.getElementById('locationNameHint').className = 'geo-status';
     pendingLat = null; pendingLng = null;
     if (pickMarker && pickMap) { pickMap.removeLayer(pickMarker); pickMarker = null; }
     document.getElementById('modalCoords').textContent = 'Nessuna posizione selezionata';
+}
+
+
+// ── Reverse geocoding: coordinate → nome luogo (Nominatim) ───────────────────
+async function reverseGeocode(lat, lng) {
+    try {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=17&accept-language=it`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data && data.display_name) {
+            // Prendi le prime 3 parti (es. "Via Roma, Milano, Lombardia")
+            return data.display_name.split(',').slice(0, 3).join(',').trim();
+        }
+    } catch { /* silenzioso */ }
+    return null;
+}
+
+// Imposta location_name nel campo e mostra hint
+function setLocationName(name, hint) {
+    const input = document.getElementById('locationName');
+    const hintEl = document.getElementById('locationNameHint');
+    if (name && !input.value) {  // non sovrascrivere se l'utente ha già scritto qualcosa
+        input.value = name;
+    }
+    if (hint) {
+        hintEl.textContent = hint;
+        hintEl.className = 'geo-status success';
+    }
 }
 
 // ── GPS ───────────────────────────────────────────────────────────────────────
@@ -114,12 +145,21 @@ function useMyLocation() {
     }
     btn.disabled = true;
     navigator.geolocation.getCurrentPosition(
-        (pos) => {
+        async (pos) => {
             btn.disabled = false;
-            document.getElementById('emergencyLat').value = pos.coords.latitude.toFixed(6);
-            document.getElementById('emergencyLng').value = pos.coords.longitude.toFixed(6);
-            status.textContent = `✓ GPS: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            document.getElementById('emergencyLat').value = lat.toFixed(6);
+            document.getElementById('emergencyLng').value = lng.toFixed(6);
+            status.textContent = `✓ GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
             status.className = 'geo-status success';
+            // Reverse geocoding automatico
+            const hint = document.getElementById('locationNameHint');
+            hint.textContent = 'Ricerca indirizzo...';
+            hint.className = 'geo-status';
+            const name = await reverseGeocode(lat.toFixed(6), lng.toFixed(6));
+            if (name) setLocationName(name, `✓ Indirizzo rilevato automaticamente`);
+            else { hint.textContent = ''; }
         },
         (err) => {
             btn.disabled = false;
@@ -152,8 +192,10 @@ async function searchAddress() {
 
 function selectResult(lat, lng, label) {
     document.getElementById('searchResults').style.display = 'none';
+    const shortLabel = label.split(',').slice(0,3).join(',').trim();
     document.getElementById('addressSearch').value = label.split(',').slice(0,2).join(',');
     setPickedLocation(parseFloat(lat), parseFloat(lng));
+    setLocationName(shortLabel, '✓ Luogo dalla ricerca');
 }
 
 document.addEventListener('click', (e) => {
@@ -205,8 +247,9 @@ function emergencyCard(e, showActions) {
                 <span class="status ${e.status}">${labels[e.status]||e.status}</span>
             </div>
             ${e.username ? `<div class="meta-user">👤 ${e.username}</div>` : ''}
+            ${e.location_name ? `<div class="location-name">📌 ${e.location_name}</div>` : ''}
             <div class="desc">${e.description}</div>
-            <div class="meta">${e.latitude ? `📍 ${parseFloat(e.latitude).toFixed(4)}, ${parseFloat(e.longitude).toFixed(4)} · ` : ''}${new Date(e.created_at).toLocaleString('it-IT')}</div>
+            <div class="meta">${e.latitude ? `🌐 ${parseFloat(e.latitude).toFixed(4)}, ${parseFloat(e.longitude).toFixed(4)} · ` : ''}${new Date(e.created_at).toLocaleString('it-IT')}</div>
             ${showActions && e.status!=='chiusa' && e.status!=='annullata' ? `
             <div class="emergency-actions">
                 ${e.status==='aperta' ? `<button class="btn-action btn-take" onclick="updateStatus(${e.id},'in_carico')">Prendi in Carico</button>` : ''}
@@ -218,11 +261,20 @@ function emergencyCard(e, showActions) {
 
 // ── Crea emergenza ────────────────────────────────────────────────────────────
 async function createEmergency() {
+    const latVal = document.getElementById('emergencyLat').value;
+    const lngVal = document.getElementById('emergencyLng').value;
+
+    if (!latVal || !lngVal) {
+        showToast('La posizione è obbligatoria. Usa GPS o seleziona sulla mappa.', true);
+        return;
+    }
+
     const data = {
         type: document.getElementById('emergencyType').value,
         description: document.getElementById('emergencyDesc').value,
-        latitude: document.getElementById('emergencyLat').value || null,
-        longitude: document.getElementById('emergencyLng').value || null
+        latitude: latVal,
+        longitude: lngVal,
+        location_name: document.getElementById('locationName').value.trim() || null
     };
     try {
         const res = await fetch('/api/emergencies', {
@@ -233,6 +285,8 @@ async function createEmergency() {
         });
         if (res.ok) {
             document.getElementById('emergencyForm').reset();
+            document.getElementById('locationName').value = '';
+            document.getElementById('locationNameHint').textContent = '';
             clearLocation();
             loadStats(); loadMyEmergencies();
             if (document.getElementById('centralView').style.display !== 'none') loadAllEmergencies();
