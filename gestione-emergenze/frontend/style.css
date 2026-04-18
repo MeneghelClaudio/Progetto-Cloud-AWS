@@ -105,13 +105,10 @@ body { background: var(--bg-color); color: var(--text-main); display: flex; flex
 .panel h2 { font-size: 0.95rem; margin-bottom: 0.6rem; flex-shrink: 0; }
 
 /* Form operatore */
-.op-form { display: flex; flex-direction: column; gap: 0.6rem; overflow: hidden; flex: 1; min-height: 0; }
+.op-form { display: flex; flex-direction: column; gap: 0.6rem; flex: 1; min-height: 0; overflow: hidden; }
 .op-form-fields { display: flex; flex-direction: column; gap: 0.6rem; flex: 1; min-height: 0; overflow-y: auto; }
 
-/* form-row rimosso: tipologia e coordinate ora su righe separate */
-
 .form-group { display: flex; flex-direction: column; gap: 0.25rem; }
-.form-group:has(textarea) { flex: 1; min-height: 0; overflow: hidden; }
 .form-group label { color: var(--text-muted); font-size: 0.82rem; }
 .label-hint { font-size: 0.72rem; opacity: 0.7; }
 
@@ -121,7 +118,7 @@ body { background: var(--bg-color); color: var(--text-main); display: flex; flex
     color: var(--text-main); font-size: 0.88rem;
 }
 
-.form-group textarea { min-height: 90px; resize: none; flex: 1; height: 100%; }
+.form-group textarea { min-height: 100px; resize: vertical; }
 
 /* Riga posizione */
 .pos-row { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
@@ -152,7 +149,7 @@ body { background: var(--bg-color); color: var(--text-main); display: flex; flex
 .btn-submit {
     padding: 0.65rem; background: linear-gradient(to right, var(--red), #dc2626);
     border: none; border-radius: 8px; color: white; font-weight: 600;
-    cursor: pointer; font-size: 0.95rem; flex-shrink: 0; margin-top: 0.2rem;
+    cursor: pointer; font-size: 0.95rem; flex-shrink: 0;
 }
 .btn-submit:hover { opacity: 0.9; }
 
@@ -270,30 +267,6 @@ body { background: var(--bg-color); color: var(--text-main); display: flex; flex
 }
 .toast.toast-error { background: var(--red); }
 @keyframes slideIn { from{transform:translateX(80px);opacity:0} to{transform:translateX(0);opacity:1} }
-
-/* ══════════════════════════════════════
-   MOBILE
-   ══════════════════════════════════════ */
-@media (max-width: 768px) {
-    html, body { overflow: auto; }
-    .app { height: auto; }
-    .view-area { overflow: visible; padding: 0 0.8rem 1rem; height: auto; }
-
-    .app-header { padding: 0.6rem 0.8rem; }
-    .app-header h1 { font-size: 1.1rem; }
-    .stats-bar { grid-template-columns: repeat(2, 1fr); padding: 0.6rem 0.8rem 0; gap: 0.5rem; }
-    .stat-card { padding: 0.6rem 0.75rem; }
-    .stat-card h3 { font-size: 1.3rem; }
-
-    .op-grid, .central-grid { grid-template-columns: 1fr; height: auto; gap: 0.8rem; }
-
-    .panel { height: auto; max-height: none; }
-    .emergencies-list { max-height: 300px; }
-    #map { height: 300px; }
-
-    .modal-box { width: 96%; max-height: 95vh; }
-    .pick-map-modal { min-height: 220px; }
-}
 
 /* ══════════════════════════════════════════════════════════
    Leaflet 1.9.4 inlined

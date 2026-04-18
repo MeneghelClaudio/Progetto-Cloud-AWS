@@ -136,3 +136,4 @@ manuale sulle VM istanziate dal ASG.
 - fix docker compose, informazioni luogo in gestione-emergenze
 - fix layout gestione-emergenze, tolta compilazione automatica informazioni luogo per posizione (https/localhost), rimesso layout mobile e fix linea storia-del-corso (mobile)
 - test fix layout storia-del-corso (mobile) e gestione-emergenze (desktop)
+- rimosso qualunque layout mobile, test fix gestione-emergenze x desktop
