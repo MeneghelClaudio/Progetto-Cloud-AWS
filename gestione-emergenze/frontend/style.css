@@ -105,7 +105,8 @@ body { background: var(--bg-color); color: var(--text-main); display: flex; flex
 .panel h2 { font-size: 0.95rem; margin-bottom: 0.6rem; flex-shrink: 0; }
 
 /* Form operatore */
-.op-form { display: flex; flex-direction: column; gap: 0.6rem; overflow-y: auto; flex: 1; min-height: 0; }
+.op-form { display: flex; flex-direction: column; gap: 0.6rem; overflow: hidden; flex: 1; min-height: 0; }
+.op-form-fields { display: flex; flex-direction: column; gap: 0.6rem; flex: 1; min-height: 0; overflow-y: auto; }
 
 /* form-row rimosso: tipologia e coordinate ora su righe separate */
 

@@ -135,3 +135,4 @@ manuale sulle VM istanziate dal ASG.
 - aggiunto informazioni luogo in gestione-emergenze come campo opzionale che si auto compila tramite posizione/mappa
 - fix docker compose, informazioni luogo in gestione-emergenze
 - fix layout gestione-emergenze, tolta compilazione automatica informazioni luogo per posizione (https/localhost), rimesso layout mobile e fix linea storia-del-corso (mobile)
+- test fix layout storia-del-corso (mobile) e gestione-emergenze (desktop)
