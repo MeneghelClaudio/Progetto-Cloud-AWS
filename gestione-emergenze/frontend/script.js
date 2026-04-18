@@ -119,20 +119,6 @@ function clearLocation() {
 }
 
 
-// ── Reverse geocoding: coordinate → nome luogo (Nominatim) ───────────────────
-async function reverseGeocode(lat, lng) {
-    try {
-        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=17&accept-language=it`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data && data.display_name) {
-            // Prendi le prime 3 parti (es. "Via Roma, Milano, Lombardia")
-            return data.display_name.split(',').slice(0, 3).join(',').trim();
-        }
-    } catch { /* silenzioso */ }
-    return null;
-}
-
 // Imposta location_name nel campo e mostra hint
 function setLocationName(name, hint) {
     const input = document.getElementById('locationName');
@@ -161,7 +147,7 @@ function useMyLocation() {
     }
     btn.disabled = true;
     navigator.geolocation.getCurrentPosition(
-        async (pos) => {
+        (pos) => {
             btn.disabled = false;
             const lat = pos.coords.latitude;
             const lng = pos.coords.longitude;
@@ -169,13 +155,6 @@ function useMyLocation() {
             document.getElementById('emergencyLng').value = lng.toFixed(6);
             status.textContent = `✓ GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
             status.className = 'geo-status success';
-            // Reverse geocoding automatico
-            const hint = document.getElementById('locationNameHint');
-            hint.textContent = 'Ricerca indirizzo...';
-            hint.className = 'geo-status';
-            const name = await reverseGeocode(lat.toFixed(6), lng.toFixed(6));
-            if (name) setLocationName(name, `✓ Indirizzo rilevato automaticamente`);
-            else { hint.textContent = ''; }
         },
         (err) => {
             btn.disabled = false;

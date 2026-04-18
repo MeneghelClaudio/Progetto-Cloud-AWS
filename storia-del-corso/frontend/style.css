@@ -367,4 +367,21 @@ h1 {
     }
     .node-container.last-node:hover .info-card { transform: translateX(0) translateY(0); }
     .node-container.last-node .info-card::after { left: auto; right: 32px; transform: translateX(50%) rotate(45deg); }
+
+    .timeline-line {
+    display: none;
+    }
+
+    .timeline-nodes::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 4px;
+        background: var(--card-border);
+        border-radius: 4px;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
 }

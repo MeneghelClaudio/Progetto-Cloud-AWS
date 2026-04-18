@@ -18,7 +18,7 @@ TEMPLATE RELAZIONE:
     - ALB
     - ASG
     - ECR
-- ottenere posizione del dispositivo x creare segnalazione: NON FUNZIONA su http, funziona solo su https o localhost, quindi servirebbe un dominio o altre soluzioni (documentazione)
+- ottenere posizione del dispositivo x creare segnalazione: NON FUNZIONA su http, funziona solo su https o localhost, quindi servirebbe un dominio o altre soluzioni (documentazione) + compilazione automatica delle informazioni luogo in base alla posizione non funziona sempre per https/localhost (documentazione)
 
 -------------------------------------------------------------------------------------------------------------------
 
@@ -134,3 +134,4 @@ manuale sulle VM istanziate dal ASG.
 - cambiata struttura cartelle (db-init e db-reset separati), update docker compose, update readme (AWS)
 - aggiunto informazioni luogo in gestione-emergenze come campo opzionale che si auto compila tramite posizione/mappa
 - fix docker compose, informazioni luogo in gestione-emergenze
+- fix layout gestione-emergenze, tolta compilazione automatica informazioni luogo per posizione (https/localhost), rimesso layout mobile e fix linea storia-del-corso (mobile)
