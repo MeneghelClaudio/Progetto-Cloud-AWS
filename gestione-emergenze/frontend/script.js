@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('addressSearch').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') { e.preventDefault(); searchAddress(); }
     });
+
+    // Marca locationName come "manuale" se l'utente ci scrive dentro
+    document.getElementById('locationName').addEventListener('input', () => {
+        document.getElementById('locationName').dataset.auto = 'false';
+    });
 });
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -93,14 +98,21 @@ function confirmMapModal() {
     closeMapModal();
 }
 
+function clearLocationName() {
+    const input = document.getElementById('locationName');
+    input.value = '';
+    input.dataset.auto = 'false';
+    const hint = document.getElementById('locationNameHint');
+    hint.textContent = '';
+    hint.className = 'geo-status';
+}
+
 function clearLocation() {
     document.getElementById('emergencyLat').value = '';
     document.getElementById('emergencyLng').value = '';
     document.getElementById('geoStatus').textContent = '';
     document.getElementById('geoStatus').className = 'geo-status';
-    document.getElementById('locationName').value = '';
-    document.getElementById('locationNameHint').textContent = '';
-    document.getElementById('locationNameHint').className = 'geo-status';
+    clearLocationName();
     pendingLat = null; pendingLng = null;
     if (pickMarker && pickMap) { pickMap.removeLayer(pickMarker); pickMarker = null; }
     document.getElementById('modalCoords').textContent = 'Nessuna posizione selezionata';
@@ -125,8 +137,12 @@ async function reverseGeocode(lat, lng) {
 function setLocationName(name, hint) {
     const input = document.getElementById('locationName');
     const hintEl = document.getElementById('locationNameHint');
-    if (name && !input.value) {  // non sovrascrivere se l'utente ha già scritto qualcosa
+    // Sovrascrive solo se il campo è vuoto o era stato compilato automaticamente
+    // (non se l'utente ha digitato qualcosa a mano)
+    const wasAuto = input.dataset.auto === 'true';
+    if (name && (!input.value || wasAuto)) {
         input.value = name;
+        input.dataset.auto = 'true';
     }
     if (hint) {
         hintEl.textContent = hint;
@@ -285,8 +301,7 @@ async function createEmergency() {
         });
         if (res.ok) {
             document.getElementById('emergencyForm').reset();
-            document.getElementById('locationName').value = '';
-            document.getElementById('locationNameHint').textContent = '';
+            clearLocationName();
             clearLocation();
             loadStats(); loadMyEmergencies();
             if (document.getElementById('centralView').style.display !== 'none') loadAllEmergencies();

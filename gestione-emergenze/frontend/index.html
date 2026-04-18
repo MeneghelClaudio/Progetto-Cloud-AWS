@@ -72,8 +72,11 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Informazioni luogo</label>
-                            <input type="text" id="locationName" placeholder="Es. Incrocio Via Roma / Via Garibaldi, Milano" autocomplete="off">
+                            <label>Informazioni luogo <span class="label-hint">(opzionali)</span></label>
+                            <div class="loc-row">
+                                <input type="text" id="locationName" placeholder="Es. Incrocio Via Roma / Via Garibaldi, Milano" autocomplete="off">
+                                <button type="button" class="btn-clear-geo" onclick="clearLocationName()" title="Cancella">✕</button>
+                            </div>
                             <div id="locationNameHint" class="geo-status"></div>
                         </div>
 

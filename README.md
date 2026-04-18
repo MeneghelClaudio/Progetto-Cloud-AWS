@@ -133,3 +133,4 @@ manuale sulle VM istanziate dal ASG.
 - update readme (lista commit)
 - cambiata struttura cartelle (db-init e db-reset separati), update docker compose, update readme (AWS)
 - aggiunto informazioni luogo in gestione-emergenze come campo opzionale che si auto compila tramite posizione/mappa
+- fix docker compose, informazioni luogo in gestione-emergenze

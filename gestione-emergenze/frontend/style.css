@@ -105,11 +105,12 @@ body { background: var(--bg-color); color: var(--text-main); display: flex; flex
 .panel h2 { font-size: 0.95rem; margin-bottom: 0.6rem; flex-shrink: 0; }
 
 /* Form operatore */
-.op-form { display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; flex: 1; min-height: 0; }
+.op-form { display: flex; flex-direction: column; gap: 0.6rem; overflow-y: auto; flex: 1; min-height: 0; justify-content: space-between; }
 
 /* form-row rimosso: tipologia e coordinate ora su righe separate */
 
 .form-group { display: flex; flex-direction: column; gap: 0.25rem; }
+.form-group:has(textarea) { flex: 1; min-height: 0; }
 .form-group label { color: var(--text-muted); font-size: 0.82rem; }
 .label-hint { font-size: 0.72rem; opacity: 0.7; }
 
@@ -119,7 +120,7 @@ body { background: var(--bg-color); color: var(--text-main); display: flex; flex
     color: var(--text-main); font-size: 0.88rem;
 }
 
-.form-group textarea { min-height: 70px; resize: vertical; flex: 1; }
+.form-group textarea { min-height: 90px; resize: vertical; flex: 1; }
 
 /* Riga posizione */
 .pos-row { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
@@ -133,6 +134,15 @@ body { background: var(--bg-color); color: var(--text-main); display: flex; flex
 .btn-map-pick:hover  { border-color: var(--accent-blue); color: var(--accent-blue); }
 .btn-clear-geo:hover { border-color: var(--red); color: var(--red); }
 .btn-geo:disabled    { opacity: 0.5; cursor: not-allowed; }
+
+.loc-row {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+.loc-row input {
+    flex: 1;
+}
 
 .geo-status { font-size: 0.8rem; min-height: 1em; }
 .geo-status.success { color: var(--green); }
