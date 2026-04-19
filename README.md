@@ -1,9 +1,3 @@
-TODO:
-- utilizzare auto scaling group ASG (AMI, launch template, TG, ALB)
-- pubblicare immagini docker su ECR (modificare docker compose?)
-
--------------------------------------------------------------------------------------------------------------------
-
 TEMPLATE RELAZIONE:
 - struttura progetto: 6 container (frontend, backend, db-init, db-reset, storia-del-corso, gestione-emergenze)
 - servizi AWS:
@@ -12,12 +6,12 @@ TEMPLATE RELAZIONE:
     - security groups: EC2 (syam-meneghel-progetto-cloud-aws-sg-ec2 -> in-out 22 80, out all-tcp)
         + ALTERNATIVA: security group RDS (syam-meneghel-progetto-cloud-aws-sg-rds -> in 3306 con security group EC2) con aggiunta di peering connection tra ec2 e rds! (documentazione)
     - keypair (syam-meneghel-progetto-cloud-aws-keypair.pem)
-    - AMI
-    - launch template
-    - target group
-    - ALB
-    - ASG
-    - ECR
+    - ECR (repository: 240595528763.dkr.ecr.eu-west-1.amazonaws.com/syam/meneghel-progetto-cloud-aws, 6 immagini divise per tag: frontend, backend, db-init, db-reset, storia-del-corso, gestione-emergenze, cambiato il docker compose con le reference alle immagini pubblicate in ECR)
+    - AMI ()
+    - launch template ()
+    - target group ()
+    - ALB ()
+    - ASG ()
 - ottenere posizione del dispositivo x creare segnalazione: NON FUNZIONA su http, funziona solo su https o localhost, quindi servirebbe un dominio o altre soluzioni (documentazione) + compilazione automatica delle informazioni luogo in base alla posizione non funziona sempre per https/localhost (documentazione)
 
 -------------------------------------------------------------------------------------------------------------------
@@ -140,3 +134,4 @@ manuale sulle VM istanziate dal ASG.
 - test 2 fix gestione-emergenze x desktop
 - test 3 fix gestione-emergenze x desktop
 - versione finale (fix gestione-emergenze x desktop)
+- update docker compose con riferimento alle immagini docker pushate in AWS ECR, update readme (template documentazione)

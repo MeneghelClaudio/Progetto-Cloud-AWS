@@ -3,9 +3,10 @@ version: '3.8'
 services:
 
   frontend:
-    build:
-      context: ./dashboard/frontend
-      dockerfile: Dockerfile
+    #build:
+    #  context: ./dashboard/frontend
+    #  dockerfile: Dockerfile
+    image: 240595528763.dkr.ecr.eu-west-1.amazonaws.com/syam/meneghel-progetto-cloud-aws:frontend
     container_name: dashboard-frontend
     networks:
       - dashboard-network
@@ -15,9 +16,10 @@ services:
       - backend
 
   backend:
-    build:
-      context: ./dashboard/backend
-      dockerfile: Dockerfile
+    #build:
+    #  context: ./dashboard/backend
+    #  dockerfile: Dockerfile
+    image: 240595528763.dkr.ecr.eu-west-1.amazonaws.com/syam/meneghel-progetto-cloud-aws:backend
     container_name: dashboard-backend
     environment:
       DB_HOST: ${DB_HOST:-syam-meneghel-progetto-cloud-aws-db.c9nj1x2p6gk5.eu-west-1.rds.amazonaws.com}
@@ -31,9 +33,10 @@ services:
   # Eseguito ad ogni avvio: crea tabelle se non esistono, crea utente root se mancante.
   # Sicuro per ASG: IF NOT EXISTS garantisce idempotenza.
   db-init:
-    build:
-      context: ./dashboard/database/db-init
-      dockerfile: Dockerfile
+    #build:
+    #  context: ./dashboard/database/db-init
+    #  dockerfile: Dockerfile
+    image: 240595528763.dkr.ecr.eu-west-1.amazonaws.com/syam/meneghel-progetto-cloud-aws:db-init
     container_name: db-init
     restart: "no"
     environment:
@@ -47,9 +50,10 @@ services:
   # NON parte con docker compose up (profile: reset).
   # Per svuotare il DB: docker compose run --rm db-reset
   db-reset:
-    build:
-      context: ./dashboard/database/db-reset
-      dockerfile: Dockerfile
+    #build:
+    #  context: ./dashboard/database/db-reset
+    #  dockerfile: Dockerfile
+    image: 240595528763.dkr.ecr.eu-west-1.amazonaws.com/syam/meneghel-progetto-cloud-aws:db-reset
     container_name: db-reset
     restart: "no"
     profiles:
@@ -63,8 +67,10 @@ services:
       - dashboard-network
 
   storia-del-corso:
-    build:
-      context: ./storia-del-corso
+    #build:
+    #  context: ./storia-del-corso
+    #  dockerfile: Dockerfile
+    image: 240595528763.dkr.ecr.eu-west-1.amazonaws.com/syam/meneghel-progetto-cloud-aws:storia-del-corso
     container_name: storia-del-corso
     expose:
       - "80"
@@ -72,9 +78,10 @@ services:
       - dashboard-network
 
   gestione-emergenze:
-    build:
-      context: ./gestione-emergenze
-      dockerfile: Dockerfile
+    #build:
+    #  context: ./gestione-emergenze
+    #  dockerfile: Dockerfile
+    image: 240595528763.dkr.ecr.eu-west-1.amazonaws.com/syam/meneghel-progetto-cloud-aws:gestione-emergenze
     container_name: gestione-emergenze
     expose:
       - "80"
