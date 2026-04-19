@@ -15,9 +15,10 @@ TEMPLATE RELAZIONE:
     - AWS CLI + IAM (installato AWS CLI v2 su ec2 di base, poi configure con credenziali IAM)
     - AMI (syam-meneghel-progetto-cloud-aws-ami)
     - LT, launch template (syam-meneghel-progetto-cloud-aws-lt, con security group syam-meneghel-progetto-cloud-aws-sg-ec2 e keypair syam-meneghel-progetto-cloud-aws-keypair.pem)
-    - TG, target group (instances, syam-meneghel-prog-cloud-aws-tg, HTTP 80, vpc default, nessun target registrato)
+    - TG, target group (instances, syam-meneghel-prog-cloud-aws-tg, HTTP 80, vpc default, nessun target registrato, attivato stickiness con cookie del load balancer x evitare problema loop di login con 2 istanze!)
     - ALB (application load balancer, syam-meneghel-prog-cloud-aws-alb, vpc default con 2 zone, security group syam-meneghel-progetto-cloud-aws-sg-alb (non sg-ec2!), HTTP 80 con target group syam-meneghel-prog-cloud-aws-tg)
     - ASG (syam-meneghel-progetto-cloud-aws-asg, launch template syam-meneghel-progetto-cloud-aws-lt, vpc default con 2 az, balanced best effort, load balancer con target group syam-meneghel-prog-cloud-aws-tg, group size: desired=1 min=1 max=2)
+        - per test di creazione di istanze, cambiare i valori (desired-min-max) da (1-1-2) a (2-1-3)!
 - ottenere posizione del dispositivo x creare segnalazione: NON FUNZIONA su http, funziona solo su https o localhost, quindi servirebbe un dominio o altre soluzioni (documentazione) + compilazione automatica delle informazioni luogo in base alla posizione non funziona sempre per https/localhost (documentazione)
 - script "user data" x launch template (file: script_user_data_lt.sh):
     - comando di debug dei log: cat /var/log/user-data.log
@@ -147,3 +148,4 @@ manuale sulle VM istanziate dal ASG.
 - versione finale (fix gestione-emergenze x desktop)
 - update docker compose con riferimento alle immagini docker pushate in AWS ECR, update readme (template documentazione)
 - versione finale con tutti i servizi AWS implementati, update readme (documentazione)
+- update readme (documentazione)
