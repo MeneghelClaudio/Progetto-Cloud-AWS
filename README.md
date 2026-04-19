@@ -1,18 +1,29 @@
 TEMPLATE RELAZIONE:
 - struttura progetto: 6 container (frontend, backend, db-init, db-reset, storia-del-corso, gestione-emergenze)
+- accesso tramite dns alb: syam-meneghel-prog-cloud-aws-alb-913263589.eu-west-1.elb.amazonaws.com
 - servizi AWS:
     - EC2 (syam-meneghel-progetto-cloud-aws-ec2 -> istanza con docker-compose originale)
     - RDS (syam-meneghel-progetto-cloud-aws-db -> database mysql con utenti+dati -> usr: syam_meneghel, pwd: meneghel_password, db: dashboard_db, endpoint: syam-meneghel-progetto-cloud-aws-db.c9nj1x2p6gk5.eu-west-1.rds.amazonaws.com)
-    - security groups: EC2 (syam-meneghel-progetto-cloud-aws-sg-ec2 -> in-out 22 80, out all-tcp)
+    - security groups:
+        - EC2 (syam-meneghel-progetto-cloud-aws-sg-ec2 -> in-out 22 80, out all-tcp)
         + ALTERNATIVA: security group RDS (syam-meneghel-progetto-cloud-aws-sg-rds -> in 3306 con security group EC2) con aggiunta di peering connection tra ec2 e rds! (documentazione)
+        - ALB (syam-meneghel-progetto-cloud-aws-sg-alb -> in 80, out all (default))
+        - modifica EC2 -> inbound, su 80 mettere sg-alb come source!
     - keypair (syam-meneghel-progetto-cloud-aws-keypair.pem)
     - ECR (repository: 240595528763.dkr.ecr.eu-west-1.amazonaws.com/syam/meneghel-progetto-cloud-aws, 6 immagini divise per tag: frontend, backend, db-init, db-reset, storia-del-corso, gestione-emergenze, cambiato il docker compose con le reference alle immagini pubblicate in ECR)
-    - AMI ()
-    - launch template ()
-    - target group ()
-    - ALB ()
-    - ASG ()
+    - S3 (syam-meneghel-progetto-cloud-aws-s3, bucket s3 con accesso pubblico con all'interno il file docker-compose.yml utilizzato dalle EC2 per fare il build dei container, donwload del file da S3 con: aws s3 cp s3://syam-meneghel-progetto-cloud-aws-s3/docker-compose.yml Progetto-Cloud-AWS/)
+    - AWS CLI + IAM (installato AWS CLI v2 su ec2 di base, poi configure con credenziali IAM)
+    - AMI (syam-meneghel-progetto-cloud-aws-ami)
+    - LT, launch template (syam-meneghel-progetto-cloud-aws-lt, con security group syam-meneghel-progetto-cloud-aws-sg-ec2 e keypair syam-meneghel-progetto-cloud-aws-keypair.pem)
+    - TG, target group (instances, syam-meneghel-prog-cloud-aws-tg, HTTP 80, vpc default, nessun target registrato)
+    - ALB (application load balancer, syam-meneghel-prog-cloud-aws-alb, vpc default con 2 zone, security group syam-meneghel-progetto-cloud-aws-sg-alb (non sg-ec2!), HTTP 80 con target group syam-meneghel-prog-cloud-aws-tg)
+    - ASG (syam-meneghel-progetto-cloud-aws-asg, launch template syam-meneghel-progetto-cloud-aws-lt, vpc default con 2 az, balanced best effort, load balancer con target group syam-meneghel-prog-cloud-aws-tg, group size: desired=1 min=1 max=2)
 - ottenere posizione del dispositivo x creare segnalazione: NON FUNZIONA su http, funziona solo su https o localhost, quindi servirebbe un dominio o altre soluzioni (documentazione) + compilazione automatica delle informazioni luogo in base alla posizione non funziona sempre per https/localhost (documentazione)
+- script "user data" x launch template (file: script_user_data_lt.sh):
+    - comando di debug dei log: cat /var/log/user-data.log
+- per resettare il db:
+    - cd app
+    - sudo docker-compose run --rm db-reset
 
 -------------------------------------------------------------------------------------------------------------------
 
@@ -135,3 +146,4 @@ manuale sulle VM istanziate dal ASG.
 - test 3 fix gestione-emergenze x desktop
 - versione finale (fix gestione-emergenze x desktop)
 - update docker compose con riferimento alle immagini docker pushate in AWS ECR, update readme (template documentazione)
+- versione finale con tutti i servizi AWS implementati, update readme (documentazione)
